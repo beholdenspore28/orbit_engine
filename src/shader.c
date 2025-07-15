@@ -45,4 +45,3 @@ GLuint engine_shader_create(const char *vertex_shader_file_path,
 
   return shader_program;
 }
-

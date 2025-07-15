@@ -17,7 +17,7 @@ typedef struct {
   DEFINE_LIST(type)
 
 #define DECLARE_LIST(type)                                                     \
-  ENGINE_NOWARN(                                                                \
+  ENGINE_NOWARN(                                                               \
       "-Wunused-function", typedef type *list_##type;                          \
                                                                                \
       static inline list_size list_##type##_count(const list_##type list);     \
@@ -37,7 +37,7 @@ typedef struct {
 
 #define DEFINE_LIST(type)                                                      \
                                                                                \
-  ENGINE_NOWARN(                                                                \
+  ENGINE_NOWARN(                                                               \
       "-Wunused-function",                                                     \
       static inline list_size list_##type##_count(const list_##type list) {    \
         list_meta_data *data = ((list_meta_data *)(list)) - 1;                 \

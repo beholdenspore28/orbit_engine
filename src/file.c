@@ -33,4 +33,3 @@ engine_file_t engine_file_load_as_string(const char *filename) {
 }
 
 void engine_file_free(const engine_file_t file) { free(file.text); }
-
