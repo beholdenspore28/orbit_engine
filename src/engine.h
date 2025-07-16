@@ -1,26 +1,18 @@
 #ifndef ENGINE_H
 #define ENGINE_H
 
-#include "list.h"
-#include "mathf.h"
-#include "logging.h"
-
-#include "glad/gl.h"
-#define GLFW_INCLUDE_NONE
-#include <GLFW/glfw3.h>
-
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 
-#define ENGINE_FILE_CHUNK_SIZE (64 /* chars */)
-#define ENGINE_FILE_GROWTH (4 /* times */)
+#include "list.h"
+#include "mathf.h"
+#include "logging.h"
+#include "file.h"
 
-typedef struct {
-  size_t length;
-  char *text;
-  int error;
-} engine_file_t;
+#include "glad/gl.h"
+#define GLFW_INCLUDE_NONE
+#include <GLFW/glfw3.h>
 
 typedef struct {
   GLuint VAO;
