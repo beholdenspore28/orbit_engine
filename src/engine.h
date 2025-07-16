@@ -1,3 +1,6 @@
+#ifndef ENGINE_H
+#define ENGINE_H
+
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -66,9 +69,4 @@ void engine_run(void) {
   glDeleteProgram(hello_triangle_shader);
 }
 
-int main() {
-  engine_log("Rev up those fryers!");
-  engine_start();
-  engine_run();
-  engine_stop();
-}
+#endif // ENGINE_H
