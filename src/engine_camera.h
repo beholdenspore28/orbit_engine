@@ -1,6 +1,11 @@
 #ifndef ENGINE_CAMERA_H
 #define ENGINE_CAMERA_H
 
+typedef struct {
+  mathf_transform_t transform;
+  float *matrix;
+} camera_t;
+
 camera_t camera_alloc(void) {
   return (camera_t){
       .transform =

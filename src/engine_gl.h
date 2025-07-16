@@ -12,19 +12,6 @@ typedef struct {
 
 static engine engine_context;
 
-typedef struct {
-  GLuint VAO;
-  GLuint *VBOs;
-  GLuint EBO;
-  GLuint vertices_count;
-  GLuint indices_count;
-} mesh_t;
-
-typedef struct {
-  mathf_transform_t transform;
-  float *matrix;
-} camera_t;
-
 // function to intercept and log errors thrown by GLFW
 void engine_glfw_error_callback(int error, const char *description) {
   (void)error;

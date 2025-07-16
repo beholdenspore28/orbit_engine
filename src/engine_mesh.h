@@ -1,6 +1,14 @@
 #ifndef ENGINE_MESH_H
 #define ENGINE_MESH_H
 
+typedef struct {
+  GLuint VAO;
+  GLuint *VBOs;
+  GLuint EBO;
+  GLuint vertices_count;
+  GLuint indices_count;
+} mesh_t;
+
 mesh_t mesh_planet_alloc(const unsigned int subdivisions,
                          const float amplitude) {
 
