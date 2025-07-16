@@ -1,4 +1,5 @@
-#include "engine.h"
+#ifndef ENGINE_SHADER_H
+#define ENGINE_SHADER_H
 
 GLuint engine_shader_compile_source(const char *file_path,
                                     uint32_t shader_type) {
@@ -45,3 +46,5 @@ GLuint engine_shader_create(const char *vertex_shader_file_path,
 
   return shader_program;
 }
+
+#endif // ENGINE_SHADER_H

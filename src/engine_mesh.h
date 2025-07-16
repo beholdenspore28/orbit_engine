@@ -1,4 +1,5 @@
-#include "engine.h"
+#ifndef ENGINE_MESH_H
+#define ENGINE_MESH_H
 
 mesh_t mesh_planet_alloc(const unsigned int subdivisions,
                          const float amplitude) {
@@ -149,3 +150,5 @@ mesh_t mesh_planet_alloc(const unsigned int subdivisions,
 
   return mesh;
 }
+
+#endif // ENGINE_MESH_H
