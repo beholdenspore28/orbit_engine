@@ -48,7 +48,7 @@ static inline int engine_start(void) {
   glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
   glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-  engine_context.window = glfwCreateWindow(640, 480, "My Title", NULL, NULL);
+  engine_context.window = glfwCreateWindow(640, 480, "Game Window", NULL, NULL);
   if (!engine_context.window) {
     engine_error("Window or OpenGL context creation failed");
     glfwTerminate();
@@ -60,6 +60,9 @@ static inline int engine_start(void) {
     engine_error("failed to initialize GLAD!");
     return EXIT_FAILURE;
   };
+
+  glEnable(GL_CULL_FACE);
+  glEnable(GL_DEPTH_TEST);
 
   glfwSetFramebufferSizeCallback(engine_context.window,
                                  engine_glfw_framebuffer_size_callback);
@@ -167,13 +170,11 @@ void game_main(void) {
       .rotation = (quaternion){0, 0, 0, 1},
   };
 
-  // glEnable(GL_DEPTH_TEST);
-
   while (!glfwWindowShouldClose(engine_context.window)) {
     camera_update(&camera);
 
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     glUseProgram(hello_triangle_shader);
 
