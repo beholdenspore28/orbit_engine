@@ -5,10 +5,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "list.h"
-#include "mathf.h"
-#include "logging.h"
-#include "file.h"
+#include "engine_list.h"
+#include "engine_mathf.h"
+#include "engine_logging.h"
+#include "engine_file.h"
 #include "engine_gl.h"
 
 #endif // ENGINE_H

@@ -1,6 +1,4 @@
 #include "engine.h"
-#include "list.h"
-#include "mathf.h"
 
 #include <stdio.h>
 #include <stdlib.h>
