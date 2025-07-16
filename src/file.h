@@ -10,4 +10,8 @@ typedef struct {
   int error;
 } engine_file_t;
 
+engine_file_t engine_file_load_as_string(const char *filename);
+
+void engine_file_free(const engine_file_t file);
+
 #endif // ENGINE_FILE_H
