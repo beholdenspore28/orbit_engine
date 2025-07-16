@@ -27,6 +27,8 @@ void engine_glfw_framebuffer_size_callback(GLFWwindow *window, int width,
 // allocates bare essentials and starts the engine.
 static inline int engine_start(void) {
 
+  engine_log("Rev up those fryers!");
+
   if (!glfwInit()) {
     engine_error("Initialization failed");
     return EXIT_FAILURE;
