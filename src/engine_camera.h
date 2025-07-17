@@ -20,7 +20,7 @@ camera_t camera_alloc(void) {
 
 void camera_update(camera_t *camera) {
   int width, height;
-  glfwGetFramebufferSize(engine_context.window, &width, &height);
+  glfwGetFramebufferSize(engine_glfw_window, &width, &height);
 
   const GLfloat aspect = (GLfloat)width / height;
 

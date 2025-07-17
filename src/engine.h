@@ -31,7 +31,7 @@ void engine_run(void) {
       .rotation = (quaternion){0, 0, 0, 1},
   };
 
-  while (!glfwWindowShouldClose(engine_context.window)) {
+  while (!glfwWindowShouldClose(engine_glfw_window)) {
     camera_update(&camera);
 
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
@@ -59,7 +59,7 @@ void engine_run(void) {
     glDrawElements(GL_TRIANGLES, planet.indices_count, GL_UNSIGNED_INT, 0);
     // glBindVertexArray(0);
 
-    glfwSwapBuffers(engine_context.window);
+    glfwSwapBuffers(engine_glfw_window);
     glfwPollEvents();
   }
 
