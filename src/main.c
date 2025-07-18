@@ -1,7 +1,7 @@
 #include "engine.h"
 
 int main() {
-  engine_glfw_start();
+  engine_start_x11();
   engine_run();
-  engine_stop();
+  engine_stop_x11();
 }

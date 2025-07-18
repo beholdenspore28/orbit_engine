@@ -31,7 +31,9 @@ void engine_run(void) {
       .rotation = (quaternion){0, 0, 0, 1},
   };
 
-  while (!glfwWindowShouldClose(engine_glfw_window)) {
+  bool quit = 0;
+
+  while (!quit) {
     camera_update(&camera);
 
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
@@ -59,8 +61,18 @@ void engine_run(void) {
     glDrawElements(GL_TRIANGLES, planet.indices_count, GL_UNSIGNED_INT, 0);
     // glBindVertexArray(0);
 
-    glfwSwapBuffers(engine_glfw_window);
-    glfwPollEvents();
+    //glfwSwapBuffers(engine_glfw_window);
+    //glfwPollEvents();
+    glXSwapBuffers(display, window);
+
+    while (XPending(display)) {
+      XEvent xev;
+      XNextEvent(display, &xev);
+
+      if (xev.type == KeyPress) {
+        quit = true;
+      }
+    }
   }
 
   glDeleteVertexArrays(1, &planet.VAO);

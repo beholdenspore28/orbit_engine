@@ -1,70 +1,110 @@
 #ifndef ENGINE_GL_H
 #define ENGINE_GL_H
 
+#include <stdio.h>
+#include <stdbool.h>
+#include <unistd.h>
+
+#include <X11/Xlib.h>
+#include <X11/Xutil.h>
+
 #include "glad/gl.h"
-#define GLFW_INCLUDE_NONE
-#include <GLFW/glfw3.h>
+#include "glad/glx.h"
 
-// holds data required for basic window management, graphics context, etc..
-static GLFWwindow *engine_glfw_window;
+const int window_width = 800, window_height = 480;
 
-// function to intercept and log errors thrown by GLFW
-void engine_glfw_error_callback(int error, const char *description) {
-  (void)error;
-  engine_error("%s\n", description);
-}
+Display *display;
+int screen;
+GLXContext context;
+Window window;
+Colormap colormap;
 
-void engine_glfw_framebuffer_size_callback(GLFWwindow *window, int width,
-                                           int height) {
-  (void)window;
-  glViewport(0, 0, width, height);
-}
+bool engine_start_x11(void) {
+    display = XOpenDisplay(NULL);
+    if (display == NULL) {
+        printf("cannot connect to X server\n");
+        return false;
+    }
 
-// allocates bare essentials and starts the engine.
-static inline int engine_glfw_start(void) {
+    screen = DefaultScreen(display);
 
-  engine_log("Rev up those fryers!");
+    int glx_version = gladLoaderLoadGLX(display, screen);
+    if (!glx_version) {
+        printf("Unable to load GLX.\n");
+        return false;
+    }
+    printf("Loaded GLX %d.%d\n", GLAD_VERSION_MAJOR(glx_version), GLAD_VERSION_MINOR(glx_version));
 
-  if (!glfwInit()) {
-    engine_error("Initialization failed");
-    return EXIT_FAILURE;
-  }
+    Window root = RootWindow(display, screen);
 
-  glfwSetErrorCallback(engine_glfw_error_callback);
+    GLint visual_attributes[] = { GLX_RGBA, GLX_DOUBLEBUFFER, None };
+    XVisualInfo *visual_info = glXChooseVisual(display, screen, visual_attributes);
 
-#ifdef __APPLE__
-  glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+    colormap = XCreateColormap(display, root, visual_info->visual, AllocNone);
+
+    XSetWindowAttributes attributes;
+    attributes.event_mask = ExposureMask | KeyPressMask | KeyReleaseMask;
+    attributes.colormap = colormap;
+
+    window =
+        XCreateWindow(display, root, 0, 0, window_width, window_height, 0,
+                      visual_info->depth, InputOutput, visual_info->visual,
+                      CWColormap | CWEventMask, &attributes);
+
+    XMapWindow(display, window);
+    XStoreName(display, window, "[glad] GLX with X11");
+
+    if (!window) {
+        printf("Unable to create window.\n");
+        return false;
+    }
+
+    context = glXCreateContext(display, visual_info, NULL, GL_TRUE);
+    glXMakeCurrent(display, window, context);
+
+    int gl_version = gladLoaderLoadGL();
+    if (!gl_version) {
+        printf("Unable to load GL.\n");
+        return false;
+    }
+    printf("Loaded GL %d.%d\n", GLAD_VERSION_MAJOR(gl_version), GLAD_VERSION_MINOR(gl_version));
+
+    XWindowAttributes gwa;
+    XGetWindowAttributes(display, window, &gwa);
+    glViewport(0, 0, gwa.width, gwa.height);
+
+#if 0
+    bool quit = false;
+    while (!quit) {
+        while (XPending(display)) {
+            XEvent xev;
+            XNextEvent(display, &xev);
+
+            if (xev.type == KeyPress) {
+                quit = true;
+            }
+        }
+
+        glClearColor(0.8, 0.6, 0.7, 1.0);
+        glClear(GL_COLOR_BUFFER_BIT);
+
+        glXSwapBuffers(display, window);
+
+        usleep(1000 * 10);
+    }
 #endif
-
-  glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-  glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
-  glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-
-  engine_glfw_window = glfwCreateWindow(640, 480, "Game Window", NULL, NULL);
-  if (!engine_glfw_window) {
-    engine_error("Window or OpenGL context creation failed");
-    glfwTerminate();
-    return EXIT_FAILURE;
-  }
-
-  glfwMakeContextCurrent(engine_glfw_window);
-  if (!gladLoadGL(glfwGetProcAddress)) {
-    engine_error("failed to initialize GLAD!");
-    return EXIT_FAILURE;
-  };
-
-  glEnable(GL_CULL_FACE);
-  glEnable(GL_DEPTH_TEST);
-
-  glfwSetFramebufferSizeCallback(engine_glfw_window,
-                                 engine_glfw_framebuffer_size_callback);
-
-  glfwSwapInterval(1);
-
-  return EXIT_SUCCESS;
+  return true;
 }
 
-// cleans up allocated memory and stops the engine
-static inline void engine_stop(void) { glfwTerminate(); }
+void engine_stop_x11(void) {
+    glXMakeCurrent(display, 0, 0);
+    glXDestroyContext(display, context);
+
+    XDestroyWindow(display, window);
+    XFreeColormap(display, colormap);
+    XCloseDisplay(display);
+
+    gladLoaderUnloadGLX();
+}
 
 #endif // ENGINE_GL_H
