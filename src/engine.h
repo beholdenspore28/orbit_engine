@@ -1,18 +1,18 @@
 #ifndef ENGINE_H
 #define ENGINE_H
 
+#include "engine_list.h"
 #include "engine_logging.h"
 #include "engine_mathf.h"
-#include "engine_list.h"
 
-#include <X11/Xlib.h>
-#include <X11/Xutil.h>
 #include "glad/gl.h"
 #include "glad/glx.h"
+#include <X11/Xlib.h>
+#include <X11/Xutil.h>
 
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdbool.h>
 
 extern const char *window_title;
 extern bool engine_running;
@@ -27,7 +27,7 @@ bool engine_start_glx(void);
 void engine_stop_glx(void);
 void engine_update_glx(void);
 
-struct engine_file{
+struct engine_file {
   size_t length;
   char *text;
   int error;
@@ -46,7 +46,7 @@ struct mesh {
 };
 
 struct mesh mesh_planet_alloc(const unsigned int subdivisions,
-                         const float amplitude);
+                              const float amplitude);
 
 struct camera {
   struct transform transform;
@@ -67,6 +67,5 @@ typedef struct vector3 vector3;
 DECLARE_LIST(vector2)
 DECLARE_LIST(vector3)
 DECLARE_LIST(GLuint)
-
 
 #endif // ENGINE_H

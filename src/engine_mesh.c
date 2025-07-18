@@ -1,7 +1,7 @@
 #include "engine.h"
 
 struct mesh mesh_planet_alloc(const unsigned int subdivisions,
-                         const float amplitude) {
+                              const float amplitude) {
 
   list_GLuint indices_initial = NULL;
   list_vector3 vertices_initial = NULL;

@@ -60,7 +60,6 @@ void engine_update(void) {
   glDeleteProgram(hello_triangle_shader);
 }
 
-
 int main() {
   engine_start_glx();
   engine_update();

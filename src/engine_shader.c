@@ -1,5 +1,5 @@
-#include "glad/gl.h"
 #include "engine.h"
+#include "glad/gl.h"
 
 GLuint engine_shader_compile_source(const char *file_path,
                                     uint32_t shader_type) {

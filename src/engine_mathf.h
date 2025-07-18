@@ -7,7 +7,7 @@
 #define MATHF_FLOAT_EPSILON (1e-4)
 #define MATHF_PI (3.14159265358)
 
-struct quaternion{
+struct quaternion {
   float x, y, z, w;
 };
 
@@ -15,11 +15,11 @@ struct vector2 {
   float x, y;
 };
 
-struct vector3{
+struct vector3 {
   float x, y, z;
-} ;
+};
 
-struct vector4{
+struct vector4 {
   float x, y, z, w;
 };
 
@@ -232,7 +232,8 @@ static inline void vector2_sub(struct vector2 *a, struct vector2 b) {
   a->y -= b.y;
 }
 
-static inline struct vector2 vector2_subbed(struct vector2 a, struct vector2 b) {
+static inline struct vector2 vector2_subbed(struct vector2 a,
+                                            struct vector2 b) {
   return (struct vector2){
       a.x - b.x,
       a.y - b.y,
@@ -256,7 +257,8 @@ static inline void vector2_scale(struct vector2 *v, const float s) {
   v->y *= s;
 }
 
-static inline struct vector2 vector2_scaled(const struct vector2 v, const float s) {
+static inline struct vector2 vector2_scaled(const struct vector2 v,
+                                            const float s) {
   return (struct vector2){
       v.x * s,
       v.y * s,
@@ -271,19 +273,23 @@ static inline float vector2_magnitude(const struct vector2 v) {
   return sqrtf(vector2_square_magnitude(v));
 }
 
-static inline float vector2_square_distance(const struct vector2 a, const struct vector2 b) {
+static inline float vector2_square_distance(const struct vector2 a,
+                                            const struct vector2 b) {
   return vector2_square_magnitude(vector2_subbed(b, a));
 }
 
-static inline float vector2_distance(const struct vector2 a, const struct vector2 b) {
+static inline float vector2_distance(const struct vector2 a,
+                                     const struct vector2 b) {
   return vector2_magnitude(vector2_subbed(b, a));
 }
 
-static inline float vector2_dot(const struct vector2 a, const struct vector2 b) {
+static inline float vector2_dot(const struct vector2 a,
+                                const struct vector2 b) {
   return a.x * b.x + a.y * b.y;
 }
 
-static inline struct vector2 vector2_lerp(struct vector2 a, struct vector2 b, float t) {
+static inline struct vector2 vector2_lerp(struct vector2 a, struct vector2 b,
+                                          float t) {
   return (struct vector2){
       .x = a.x + (b.x - a.x) * t,
       .y = a.y + (b.y - a.y) * t,
@@ -348,7 +354,8 @@ static inline void vector3_scale(struct vector3 *v, const float s) {
   v->z *= s;
 }
 
-static inline struct vector3 vector3_scaled(const struct vector3 v, const float s) {
+static inline struct vector3 vector3_scaled(const struct vector3 v,
+                                            const float s) {
   return (struct vector3){
       v.x * s,
       v.y * s,
@@ -362,7 +369,8 @@ static inline void vector3_sub(struct vector3 *a, struct vector3 b) {
   a->z -= b.z;
 }
 
-static inline struct vector3 vector3_subbed(struct vector3 a, struct vector3 b) {
+static inline struct vector3 vector3_subbed(struct vector3 a,
+                                            struct vector3 b) {
   return (struct vector3){
       a.x - b.x,
       a.y - b.y,
@@ -409,25 +417,29 @@ static inline void vector3_normalize(struct vector3 *v) {
   vector3_scale(v, 1 / m);
 }
 
-static inline float vector3_square_distance(const struct vector3 a, const struct vector3 b) {
+static inline float vector3_square_distance(const struct vector3 a,
+                                            const struct vector3 b) {
   return vector3_square_magnitude(vector3_subbed(b, a));
 }
 
-static inline float vector3_distance(const struct vector3 a, const struct vector3 b) {
+static inline float vector3_distance(const struct vector3 a,
+                                     const struct vector3 b) {
   return vector3_magnitude(vector3_subbed(b, a));
 }
 
-static inline float vector3_dot(const struct vector3 a, const struct vector3 b) {
+static inline float vector3_dot(const struct vector3 a,
+                                const struct vector3 b) {
   return a.x * b.x + a.y * b.y + a.z * b.z;
 }
 
 static inline struct vector3 vector3_cross(struct vector3 a, struct vector3 b) {
   return (struct vector3){.x = (a.y * b.z) - (a.z * b.y),
-                   .y = -((a.x * b.z) - (a.z * b.x)),
-                   .z = (a.x * b.y) - (a.y * b.x)};
+                          .y = -((a.x * b.z) - (a.z * b.x)),
+                          .z = (a.x * b.y) - (a.y * b.x)};
 }
 
-static inline struct vector3 vector3_lerp(struct vector3 a, struct vector3 b, float t) {
+static inline struct vector3 vector3_lerp(struct vector3 a, struct vector3 b,
+                                          float t) {
   return (struct vector3){
       .x = a.x + (b.x - a.x) * t,
       .y = a.y + (b.y - a.y) * t,
@@ -486,7 +498,8 @@ static inline float vector3_angle(struct vector3 v1, struct vector3 v2) {
   return acos(cos_theta); // Returns angle in radians
 }
 
-static inline struct quaternion quat_from_angle_axis(float angle, struct vector3 axis) {
+static inline struct quaternion quat_from_angle_axis(float angle,
+                                                     struct vector3 axis) {
   struct quaternion ret;
   float s = sinf(angle / 2);
   ret.x = axis.x * s;
@@ -496,7 +509,8 @@ static inline struct quaternion quat_from_angle_axis(float angle, struct vector3
   return ret;
 }
 
-static inline struct quaternion quat_multiply(struct quaternion q1, struct quaternion q2) {
+static inline struct quaternion quat_multiply(struct quaternion q1,
+                                              struct quaternion q2) {
   struct quaternion ret = {0};
   ret.x = q1.w * q2.x + q1.x * q2.w + q1.y * q2.z - q1.z * q2.y;
   ret.y = q1.w * q2.y - q1.x * q2.z + q1.y * q2.w + q1.z * q2.x;
@@ -509,7 +523,8 @@ static inline struct quaternion quat_conjugate(struct quaternion q) {
   return (struct quaternion){-q.x, -q.y, -q.z, q.w};
 }
 
-static inline struct vector3 vector3_rotate(struct vector3 v, struct quaternion q) {
+static inline struct vector3 vector3_rotate(struct vector3 v,
+                                            struct quaternion q) {
   struct quaternion ret = (struct quaternion){v.x, v.y, v.z, 0.0};
   ret = quat_multiply(quat_multiply(q, ret), quat_conjugate(q));
   return (struct vector3){ret.x, ret.y, ret.z};
@@ -533,7 +548,8 @@ static inline struct quaternion quat_from_euler(struct vector3 euler_angles) {
   return q;
 }
 
-static inline struct quaternion quat_rotate_euler(struct quaternion q, struct vector3 euler_angles) {
+static inline struct quaternion quat_rotate_euler(struct quaternion q,
+                                                  struct vector3 euler_angles) {
   return quat_multiply(q, quat_from_euler(euler_angles));
 }
 
