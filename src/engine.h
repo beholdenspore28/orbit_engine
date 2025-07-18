@@ -3,12 +3,17 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
+
+static const char *window_title = "Game Window";
+static bool engine_running = false;
+static const int window_width = 854, window_height = 480;
 
 // the order of these header files is extremely important!
 // each header contains both API and implementation.
 #include "engine_logging.h"
 #include "engine_mathf.h"
-#include "engine_gl.h"
+#include "engine_glx.h"
 #include "engine_list.h"
 #include "engine_list_definitions.h"
 #include "engine_file.h"
@@ -16,7 +21,7 @@
 #include "engine_mesh.h"
 #include "engine_camera.h"
 
-void engine_run(void) {
+void engine_update(void) {
 
   GLuint hello_triangle_shader =
       engine_shader_create("res/shaders/hello_triangle_vertex.glsl",
@@ -31,9 +36,7 @@ void engine_run(void) {
       .rotation = (quaternion){0, 0, 0, 1},
   };
 
-  bool quit = 0;
-
-  while (!quit) {
+  while (!engine_running) {
     camera_update(&camera);
 
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
@@ -61,18 +64,7 @@ void engine_run(void) {
     glDrawElements(GL_TRIANGLES, planet.indices_count, GL_UNSIGNED_INT, 0);
     // glBindVertexArray(0);
 
-    //glfwSwapBuffers(engine_glfw_window);
-    //glfwPollEvents();
-    glXSwapBuffers(display, window);
-
-    while (XPending(display)) {
-      XEvent xev;
-      XNextEvent(display, &xev);
-
-      if (xev.type == KeyPress) {
-        quit = true;
-      }
-    }
+    engine_update_glx();
   }
 
   glDeleteVertexArrays(1, &planet.VAO);

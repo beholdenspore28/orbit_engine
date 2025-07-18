@@ -1,17 +1,10 @@
-#ifndef ENGINE_GL_H
-#define ENGINE_GL_H
-
-#include <stdio.h>
-#include <stdbool.h>
-#include <unistd.h>
+#ifndef ENGINE_GLX_H
+#define ENGINE_GLX_H
 
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
-
 #include "glad/gl.h"
 #include "glad/glx.h"
-
-const int window_width = 800, window_height = 480;
 
 Display *display;
 int screen;
@@ -22,7 +15,7 @@ Colormap colormap;
 bool engine_start_glx(void) {
     display = XOpenDisplay(NULL);
     if (display == NULL) {
-        printf("cannot connect to X server\n");
+        engine_error("cannot connect to X server");
         return false;
     }
 
@@ -30,10 +23,10 @@ bool engine_start_glx(void) {
 
     int glx_version = gladLoaderLoadGLX(display, screen);
     if (!glx_version) {
-        printf("Unable to load GLX.\n");
+        engine_error("Unable to load GLX.");
         return false;
     }
-    printf("Loaded GLX %d.%d\n", GLAD_VERSION_MAJOR(glx_version), GLAD_VERSION_MINOR(glx_version));
+    engine_log("Loaded GLX %d.%d", GLAD_VERSION_MAJOR(glx_version), GLAD_VERSION_MINOR(glx_version));
 
     Window root = RootWindow(display, screen);
 
@@ -52,10 +45,10 @@ bool engine_start_glx(void) {
                       CWColormap | CWEventMask, &attributes);
 
     XMapWindow(display, window);
-    XStoreName(display, window, "[glad] GLX with X11");
+    XStoreName(display, window, window_title);
 
     if (!window) {
-        printf("Unable to create window.\n");
+        engine_error("Unable to create window.");
         return false;
     }
 
@@ -64,10 +57,10 @@ bool engine_start_glx(void) {
 
     int gl_version = gladLoaderLoadGL();
     if (!gl_version) {
-        printf("Unable to load GL.\n");
+        engine_error("Unable to load GL.");
         return false;
     }
-    printf("Loaded GL %d.%d\n", GLAD_VERSION_MAJOR(gl_version), GLAD_VERSION_MINOR(gl_version));
+    engine_log("Loaded GL %d.%d", GLAD_VERSION_MAJOR(gl_version), GLAD_VERSION_MINOR(gl_version));
 
     XWindowAttributes gwa;
     XGetWindowAttributes(display, window, &gwa);
@@ -86,4 +79,16 @@ void engine_stop_glx(void) {
     gladLoaderUnloadGLX();
 }
 
-#endif // ENGINE_GL_H
+void engine_update_glx(void) {
+    glXSwapBuffers(display, window);
+    while (XPending(display)) {
+      XEvent xev;
+      XNextEvent(display, &xev);
+
+      if (xev.type == KeyPress) {
+        engine_running = true;
+      }
+    }
+}
+
+#endif // ENGINE_GLX_H

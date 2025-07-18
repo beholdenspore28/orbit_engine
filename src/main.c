@@ -2,6 +2,6 @@
 
 int main() {
   engine_start_glx();
-  engine_run();
+  engine_update();
   engine_stop_glx();
 }
