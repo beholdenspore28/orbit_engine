@@ -1,23 +1,12 @@
-#ifndef ENGINE_FILE_H
-#define ENGINE_FILE_H
-
-typedef struct {
-  size_t length;
-  char *text;
-  int error;
-} engine_file_t;
-
-engine_file_t engine_file_load_as_string(const char *filename);
-
-void engine_file_free(const engine_file_t file);
+#include "engine.h"
 
 #define ENGINE_FILE_CHUNK_SIZE (64 /* chars */)
 #define ENGINE_FILE_GROWTH (4 /* times */)
 
-engine_file_t engine_file_load_as_string(const char *filename) {
+struct engine_file engine_file_load_as_string(const char *filename) {
   FILE *file = fopen(filename, "r");
   if (file == NULL) {
-    engine_file_t ret;
+    struct engine_file ret;
     ret.error = 1;
     ret.text = NULL;
     return ret;
@@ -39,13 +28,11 @@ engine_file_t engine_file_load_as_string(const char *filename) {
   }
   buf[length] = '\0';
   fclose(file);
-  engine_file_t ret;
+  struct engine_file ret;
   ret.text = buf;
   ret.length = length;
   ret.error = 0;
   return ret;
 }
 
-void engine_file_free(const engine_file_t file) { free(file.text); }
-
-#endif // ENGINE_FILE_H
+void engine_file_free(const struct engine_file file) { free(file.text); }

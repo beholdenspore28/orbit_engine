@@ -1,5 +1,5 @@
-#ifndef LIST_H
-#define LIST_H
+#ifndef ENGINE_LIST_H
+#define ENGINE_LIST_H
 
 #include <stdlib.h>
 
@@ -88,4 +88,4 @@ typedef struct {
         data->count--;                                                         \
       })
 
-#endif
+#endif // ENGINE_LIST_H

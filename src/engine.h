@@ -1,76 +1,72 @@
 #ifndef ENGINE_H
 #define ENGINE_H
 
+#include "engine_logging.h"
+#include "engine_mathf.h"
+#include "engine_list.h"
+
+#include <X11/Xlib.h>
+#include <X11/Xutil.h>
+#include "glad/gl.h"
+#include "glad/glx.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
 
-static const char *window_title = "Game Window";
-static bool engine_running = false;
-static const int window_width = 854, window_height = 480;
+extern const char *window_title;
+extern bool engine_running;
+extern const int window_width, window_height;
+extern Display *display;
+extern int screen;
+extern GLXContext context;
+extern Window window;
+extern Colormap colormap;
 
-// the order of these header files is extremely important!
-// each header contains both API and implementation.
-#include "engine_logging.h"
-#include "engine_mathf.h"
-#include "engine_glx.h"
-#include "engine_list.h"
-#include "engine_list_definitions.h"
-#include "engine_file.h"
-#include "engine_shader.h"
-#include "engine_mesh.h"
-#include "engine_camera.h"
+bool engine_start_glx(void);
+void engine_stop_glx(void);
+void engine_update_glx(void);
 
-void engine_update(void) {
+struct engine_file{
+  size_t length;
+  char *text;
+  int error;
+};
 
-  GLuint hello_triangle_shader =
-      engine_shader_create("res/shaders/hello_triangle_vertex.glsl",
-                           "res/shaders/hello_triangle_fragment.glsl");
+struct engine_file engine_file_load_as_string(const char *filename);
 
-  camera_t camera = camera_alloc();
+void engine_file_free(const struct engine_file file);
 
-  mesh_t planet = mesh_planet_alloc(2, 0.1);
-  mathf_transform_t planet_transform = (mathf_transform_t){
-      .position = (vector3){0, 0, 0},
-      .scale = (vector3){1, 1, 1},
-      .rotation = (quaternion){0, 0, 0, 1},
-  };
+struct mesh {
+  GLuint VAO;
+  GLuint *VBOs;
+  GLuint EBO;
+  GLuint vertices_count;
+  GLuint indices_count;
+};
 
-  while (!engine_running) {
-    camera_update(&camera);
+struct mesh mesh_planet_alloc(const unsigned int subdivisions,
+                         const float amplitude);
 
-    glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+struct camera {
+  struct transform transform;
+  float *matrix;
+};
 
-    glUseProgram(hello_triangle_shader);
+struct camera camera_alloc(void);
+void camera_update(struct camera *camera);
 
-    {
-      GLint camera_matrix_location =
-          glGetUniformLocation(hello_triangle_shader, "u_camera_matrix");
-      glUniformMatrix4fv(camera_matrix_location, 1, GL_FALSE, camera.matrix);
-    }
+GLuint engine_shader_compile_source(const char *file_path,
+                                    uint32_t shader_type);
+GLuint engine_shader_create(const char *vertex_shader_file_path,
+                            const char *fragment_shader_file_path);
 
-    {
-      GLfloat transform_matrix[16];
-      mathf_transform_matrix(transform_matrix, &planet_transform);
+typedef struct vector2 vector2;
+typedef struct vector3 vector3;
 
-      GLint model_matrix_location =
-          glGetUniformLocation(hello_triangle_shader, "u_transform_matrix");
-      glUniformMatrix4fv(model_matrix_location, 1, GL_FALSE, transform_matrix);
-    }
+DECLARE_LIST(vector2)
+DECLARE_LIST(vector3)
+DECLARE_LIST(GLuint)
 
-    glBindVertexArray(planet.VAO);
-    // glDrawArrays(GL_TRIANGLES, 0, 6);
-    glDrawElements(GL_TRIANGLES, planet.indices_count, GL_UNSIGNED_INT, 0);
-    // glBindVertexArray(0);
-
-    engine_update_glx();
-  }
-
-  glDeleteVertexArrays(1, &planet.VAO);
-  glDeleteBuffers(1, &planet.VBOs[0]);
-  glDeleteBuffers(1, &planet.EBO);
-  glDeleteProgram(hello_triangle_shader);
-}
 
 #endif // ENGINE_H

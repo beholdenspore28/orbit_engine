@@ -1,15 +1,6 @@
-#ifndef ENGINE_MESH_H
-#define ENGINE_MESH_H
+#include "engine.h"
 
-typedef struct {
-  GLuint VAO;
-  GLuint *VBOs;
-  GLuint EBO;
-  GLuint vertices_count;
-  GLuint indices_count;
-} mesh_t;
-
-mesh_t mesh_planet_alloc(const unsigned int subdivisions,
+struct mesh mesh_planet_alloc(const unsigned int subdivisions,
                          const float amplitude) {
 
   list_GLuint indices_initial = NULL;
@@ -149,7 +140,7 @@ mesh_t mesh_planet_alloc(const unsigned int subdivisions,
 
   glBindVertexArray(0);
 
-  mesh_t mesh = {0};
+  struct mesh mesh = {0};
   mesh.VAO = VAO;
   mesh.VBOs = VBOs;
   mesh.EBO = EBO;
@@ -158,5 +149,3 @@ mesh_t mesh_planet_alloc(const unsigned int subdivisions,
 
   return mesh;
 }
-
-#endif // ENGINE_MESH_H

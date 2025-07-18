@@ -1,10 +1,4 @@
-#ifndef ENGINE_GLX_H
-#define ENGINE_GLX_H
-
-#include <X11/Xlib.h>
-#include <X11/Xutil.h>
-#include "glad/gl.h"
-#include "glad/glx.h"
+#include "engine.h"
 
 Display *display;
 int screen;
@@ -90,5 +84,3 @@ void engine_update_glx(void) {
       }
     }
 }
-
-#endif // ENGINE_GLX_H

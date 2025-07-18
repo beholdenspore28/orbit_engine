@@ -1,24 +1,18 @@
-#ifndef ENGINE_CAMERA_H
-#define ENGINE_CAMERA_H
+#include "engine.h"
 
-typedef struct {
-  mathf_transform_t transform;
-  float *matrix;
-} camera_t;
-
-camera_t camera_alloc(void) {
-  return (camera_t){
+struct camera camera_alloc(void) {
+  return (struct camera){
       .transform =
-          (mathf_transform_t){
-              .position = (vector3){0, 0, -3},
-              .rotation = (quaternion){0, 0, 0, 1},
+          (struct transform){
+              .position = (struct vector3){0, 0, -3},
+              .rotation = (struct quaternion){0, 0, 0, 1},
               .scale = (vector3){1, 1, 1},
           },
       .matrix = calloc(16, sizeof(GLfloat)),
   };
 }
 
-void camera_update(camera_t *camera) {
+void camera_update(struct camera *camera) {
 
   const GLfloat aspect = (GLfloat)window_width / window_height;
 
@@ -44,5 +38,3 @@ void camera_update(camera_t *camera) {
   mathf_mat4_multiply(camera->matrix, translation_matrix, rotation_matrix);
   mathf_mat4_multiply(camera->matrix, camera->matrix, projection);
 }
-
-#endif // ENGINE_CAMERA_H

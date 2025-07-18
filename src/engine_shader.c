@@ -1,9 +1,9 @@
-#ifndef ENGINE_SHADER_H
-#define ENGINE_SHADER_H
+#include "glad/gl.h"
+#include "engine.h"
 
 GLuint engine_shader_compile_source(const char *file_path,
                                     uint32_t shader_type) {
-  engine_file_t file = engine_file_load_as_string(file_path);
+  struct engine_file file = engine_file_load_as_string(file_path);
 
   GLuint shader = glCreateShader(shader_type);
   const char *shader_source = file.text;
@@ -46,5 +46,3 @@ GLuint engine_shader_create(const char *vertex_shader_file_path,
 
   return shader_program;
 }
-
-#endif // ENGINE_SHADER_H
