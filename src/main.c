@@ -1,7 +1,7 @@
 #include "engine.h"
 
 int main() {
-  engine_start_x11();
+  engine_start_glx();
   engine_run();
-  engine_stop_x11();
+  engine_stop_glx();
 }

@@ -19,7 +19,7 @@ GLXContext context;
 Window window;
 Colormap colormap;
 
-bool engine_start_x11(void) {
+bool engine_start_glx(void) {
     display = XOpenDisplay(NULL);
     if (display == NULL) {
         printf("cannot connect to X server\n");
@@ -72,31 +72,10 @@ bool engine_start_x11(void) {
     XWindowAttributes gwa;
     XGetWindowAttributes(display, window, &gwa);
     glViewport(0, 0, gwa.width, gwa.height);
-
-#if 0
-    bool quit = false;
-    while (!quit) {
-        while (XPending(display)) {
-            XEvent xev;
-            XNextEvent(display, &xev);
-
-            if (xev.type == KeyPress) {
-                quit = true;
-            }
-        }
-
-        glClearColor(0.8, 0.6, 0.7, 1.0);
-        glClear(GL_COLOR_BUFFER_BIT);
-
-        glXSwapBuffers(display, window);
-
-        usleep(1000 * 10);
-    }
-#endif
-  return true;
+    return true;
 }
 
-void engine_stop_x11(void) {
+void engine_stop_glx(void) {
     glXMakeCurrent(display, 0, 0);
     glXDestroyContext(display, context);
 
