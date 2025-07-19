@@ -86,7 +86,6 @@ bool engine_glx_start(void) {
   XWindowAttributes gwa;
   XGetWindowAttributes(engine_window_instance.display, engine_window_instance.window, &gwa);
   glViewport(0, 0, gwa.width, gwa.height);
-  glClearColor(0.2,0.3,0.4,1);
   return true;
 }
 

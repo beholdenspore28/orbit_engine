@@ -15,6 +15,8 @@ static struct transform planet_transform = (struct transform){
 };
 
 void engine_scene_load(void) {
+  glClearColor(0.2,0.3,0.4,1);
+
   hello_triangle_shader =
       engine_shader_create("res/shaders/hello_triangle_vertex.glsl",
                            "res/shaders/hello_triangle_fragment.glsl");
