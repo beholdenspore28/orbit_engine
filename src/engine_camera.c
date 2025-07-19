@@ -14,7 +14,7 @@ struct camera camera_alloc(void) {
 
 void camera_update(struct camera *camera) {
 
-  const GLfloat aspect = (GLfloat)window_width / window_height;
+  const GLfloat aspect = (GLfloat)engine_glx_instance.window_width / engine_glx_instance.window_height;
 
   GLfloat projection[16];
   mathf_mat4_identity(projection);

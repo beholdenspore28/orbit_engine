@@ -4,31 +4,36 @@ DEFINE_LIST(vector2)
 DEFINE_LIST(vector3)
 DEFINE_LIST(GLuint)
 
-const char *window_title = "Game Window";
-bool engine_running = false;
-const int window_width = 854, window_height = 480;
+static GLuint hello_triangle_shader = 0;
+static struct camera camera = {0};
+static struct mesh planet_mesh = {0};
 
-void engine_update(void) {
+static struct transform planet_transform = (struct transform){
+  .position = (vector3){0, 0, 0},
+    .scale = (vector3){1, 1, 1},
+    .rotation = (struct quaternion){0, 0, 0, 1},
+};
 
-  GLuint hello_triangle_shader =
+void engine_scene_load(void) {
+  hello_triangle_shader =
       engine_shader_create("res/shaders/hello_triangle_vertex.glsl",
                            "res/shaders/hello_triangle_fragment.glsl");
+  camera = camera_alloc();
+  planet_mesh = mesh_planet_alloc(2, 0.1);
+}
 
-  struct camera camera = camera_alloc();
+void engine_scene_unload(void) {
+  glDeleteVertexArrays(1, &planet_mesh.VAO);
+  glDeleteBuffers(1, &planet_mesh.VBOs[0]);
+  glDeleteBuffers(1, &planet_mesh.EBO);
+  glDeleteProgram(hello_triangle_shader);
+}
 
-  struct mesh planet = mesh_planet_alloc(2, 0.1);
-  struct transform planet_transform = (struct transform){
-      .position = (vector3){0, 0, 0},
-      .scale = (vector3){1, 1, 1},
-      .rotation = (struct quaternion){0, 0, 0, 1},
-  };
-
-  while (!engine_running) {
+void engine_update(void) {
     camera_update(&camera);
+}
 
-    glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
+void engine_draw(void) {
     glUseProgram(hello_triangle_shader);
 
     {
@@ -46,22 +51,22 @@ void engine_update(void) {
       glUniformMatrix4fv(model_matrix_location, 1, GL_FALSE, transform_matrix);
     }
 
-    glBindVertexArray(planet.VAO);
+    glBindVertexArray(planet_mesh.VAO);
     // glDrawArrays(GL_TRIANGLES, 0, 6);
-    glDrawElements(GL_TRIANGLES, planet.indices_count, GL_UNSIGNED_INT, 0);
+    glDrawElements(GL_TRIANGLES, planet_mesh.indices_count, GL_UNSIGNED_INT, 0);
     // glBindVertexArray(0);
-
-    engine_update_glx();
-  }
-
-  glDeleteVertexArrays(1, &planet.VAO);
-  glDeleteBuffers(1, &planet.VBOs[0]);
-  glDeleteBuffers(1, &planet.EBO);
-  glDeleteProgram(hello_triangle_shader);
 }
 
 int main() {
   engine_start_glx();
-  engine_update();
+  engine_scene_load();
+
+  while(engine_glx_instance.engine_running) {
+    engine_update();
+    engine_draw();
+    engine_update_glx();
+  }
+
+  engine_scene_unload();
   engine_stop_glx();
 }

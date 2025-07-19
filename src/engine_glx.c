@@ -1,21 +1,22 @@
 #include "engine.h"
 
-Display *display;
-int screen;
-GLXContext context;
-Window window;
-Colormap colormap;
+struct engine_glx engine_glx_instance = {
+  .window_title = "Game Window",
+  .engine_running = true,
+  .window_width = 640,
+  .window_height = 480,
+};
 
 bool engine_start_glx(void) {
-  display = XOpenDisplay(NULL);
-  if (display == NULL) {
+  engine_glx_instance.display = XOpenDisplay(NULL);
+  if (engine_glx_instance.display == NULL) {
     engine_error("cannot connect to X server");
     return false;
   }
 
-  screen = DefaultScreen(display);
+  engine_glx_instance.screen = DefaultScreen(engine_glx_instance.display);
 
-  int glx_version = gladLoaderLoadGLX(display, screen);
+  int glx_version = gladLoaderLoadGLX(engine_glx_instance.display, engine_glx_instance.screen);
   if (!glx_version) {
     engine_error("Unable to load GLX.");
     return false;
@@ -23,32 +24,32 @@ bool engine_start_glx(void) {
   engine_log("Loaded GLX %d.%d", GLAD_VERSION_MAJOR(glx_version),
              GLAD_VERSION_MINOR(glx_version));
 
-  Window root = RootWindow(display, screen);
+  Window root = RootWindow(engine_glx_instance.display, engine_glx_instance.screen);
 
   GLint visual_attributes[] = {GLX_RGBA, GLX_DOUBLEBUFFER, None};
   XVisualInfo *visual_info =
-      glXChooseVisual(display, screen, visual_attributes);
+      glXChooseVisual(engine_glx_instance.display, engine_glx_instance.screen, visual_attributes);
 
-  colormap = XCreateColormap(display, root, visual_info->visual, AllocNone);
+  engine_glx_instance.colormap = XCreateColormap(engine_glx_instance.display, root, visual_info->visual, AllocNone);
 
   XSetWindowAttributes attributes;
   attributes.event_mask = ExposureMask | KeyPressMask | KeyReleaseMask;
-  attributes.colormap = colormap;
+  attributes.colormap = engine_glx_instance.colormap;
 
-  window = XCreateWindow(display, root, 0, 0, window_width, window_height, 0,
+  engine_glx_instance.window = XCreateWindow(engine_glx_instance.display, root, 0, 0, engine_glx_instance.window_width, engine_glx_instance.window_height, 0,
                          visual_info->depth, InputOutput, visual_info->visual,
                          CWColormap | CWEventMask, &attributes);
 
-  XMapWindow(display, window);
-  XStoreName(display, window, window_title);
+  XMapWindow(engine_glx_instance.display, engine_glx_instance.window);
+  XStoreName(engine_glx_instance.display, engine_glx_instance.window, engine_glx_instance.window_title);
 
-  if (!window) {
+  if (!engine_glx_instance.window) {
     engine_error("Unable to create window.");
     return false;
   }
 
-  context = glXCreateContext(display, visual_info, NULL, GL_TRUE);
-  glXMakeCurrent(display, window, context);
+  engine_glx_instance.context = glXCreateContext(engine_glx_instance.display, visual_info, NULL, GL_TRUE);
+  glXMakeCurrent(engine_glx_instance.display, engine_glx_instance.window, engine_glx_instance.context);
 
   int gl_version = gladLoaderLoadGL();
   if (!gl_version) {
@@ -59,30 +60,32 @@ bool engine_start_glx(void) {
              GLAD_VERSION_MINOR(gl_version));
 
   XWindowAttributes gwa;
-  XGetWindowAttributes(display, window, &gwa);
+  XGetWindowAttributes(engine_glx_instance.display, engine_glx_instance.window, &gwa);
   glViewport(0, 0, gwa.width, gwa.height);
+  glClearColor(0.2,0.3,0.4,1);
   return true;
 }
 
 void engine_stop_glx(void) {
-  glXMakeCurrent(display, 0, 0);
-  glXDestroyContext(display, context);
+  glXMakeCurrent(engine_glx_instance.display, 0, 0);
+  glXDestroyContext(engine_glx_instance.display, engine_glx_instance.context);
 
-  XDestroyWindow(display, window);
-  XFreeColormap(display, colormap);
-  XCloseDisplay(display);
+  XDestroyWindow(engine_glx_instance.display, engine_glx_instance.window);
+  XFreeColormap(engine_glx_instance.display, engine_glx_instance.colormap);
+  XCloseDisplay(engine_glx_instance.display);
 
   gladLoaderUnloadGLX();
 }
 
 void engine_update_glx(void) {
-  glXSwapBuffers(display, window);
-  while (XPending(display)) {
+  glXSwapBuffers(engine_glx_instance.display, engine_glx_instance.window);
+  while (XPending(engine_glx_instance.display)) {
     XEvent xev;
-    XNextEvent(display, &xev);
+    XNextEvent(engine_glx_instance.display, &xev);
 
     if (xev.type == KeyPress) {
-      engine_running = true;
+      engine_glx_instance.engine_running = false;
     }
   }
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }

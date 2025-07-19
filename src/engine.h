@@ -14,14 +14,18 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-extern const char *window_title;
-extern bool engine_running;
-extern const int window_width, window_height;
-extern Display *display;
-extern int screen;
-extern GLXContext context;
-extern Window window;
-extern Colormap colormap;
+struct engine_glx {
+  const char *window_title;
+  bool engine_running;
+  const int window_width, window_height;
+  Display *display;
+  int screen;
+  GLXContext context;
+  Window window;
+  Colormap colormap;
+};
+
+extern struct engine_glx engine_glx_instance;
 
 bool engine_start_glx(void);
 void engine_stop_glx(void);
