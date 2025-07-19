@@ -52,7 +52,5 @@ void engine_scene_draw(void) {
     }
 
     glBindVertexArray(planet_mesh.VAO);
-    // glDrawArrays(GL_TRIANGLES, 0, 6);
     glDrawElements(GL_TRIANGLES, planet_mesh.indices_count, GL_UNSIGNED_INT, 0);
-    // glBindVertexArray(0);
 }
