@@ -62,7 +62,7 @@ int main() {
   engine_glx_start();
   engine_scene_load();
 
-  while(engine_glx_instance.engine_running) {
+  while(engine_is_running()) {
     engine_update();
     engine_draw();
     engine_glx_update();

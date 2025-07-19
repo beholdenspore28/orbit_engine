@@ -13,6 +13,7 @@
 
 // these function pointers will change depending on which platform you're building for
 extern float (*engine_get_aspect_ratio)(void);
+extern bool (*engine_is_running)(void);
 
 #ifdef __linux__
 #define ENGINE_GLX
@@ -28,18 +29,8 @@ extern float (*engine_get_aspect_ratio)(void);
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 
-struct engine_glx {
-  const char *window_title;
-  bool engine_running;
-  const int window_width, window_height;
-  Display *display;
-  int screen;
-  GLXContext context;
-  Window window;
-  Colormap colormap;
-};
-
-extern struct engine_glx engine_glx_instance;
+struct engine_window;
+extern struct engine_window engine_window_instance;
 
 bool engine_glx_start(void);
 void engine_glx_stop(void);
