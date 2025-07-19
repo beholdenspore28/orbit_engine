@@ -56,19 +56,3 @@ void engine_draw(void) {
     glDrawElements(GL_TRIANGLES, planet_mesh.indices_count, GL_UNSIGNED_INT, 0);
     // glBindVertexArray(0);
 }
-
-#ifdef ENGINE_GLX
-int main() {
-  engine_glx_start();
-  engine_scene_load();
-
-  while(engine_is_running()) {
-    engine_update();
-    engine_draw();
-    engine_glx_update();
-  }
-
-  engine_scene_unload();
-  engine_glx_stop();
-}
-#endif // ENGINE_GLX

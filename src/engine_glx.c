@@ -114,4 +114,18 @@ void engine_glx_update(void) {
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
+int main() {
+  engine_glx_start();
+  engine_scene_load();
+
+  while(engine_is_running()) {
+    engine_update();
+    engine_draw();
+    engine_glx_update();
+  }
+
+  engine_scene_unload();
+  engine_glx_stop();
+}
+
 #endif // ENGINE_GLX
