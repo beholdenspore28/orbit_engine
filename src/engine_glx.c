@@ -15,7 +15,7 @@ struct engine_glx engine_glx_instance = {
   .window_height = 480,
 };
 
-bool engine_start_glx(void) {
+bool engine_glx_start(void) {
   engine_glx_instance.display = XOpenDisplay(NULL);
   if (engine_glx_instance.display == NULL) {
     engine_error("cannot connect to X server");
@@ -74,7 +74,7 @@ bool engine_start_glx(void) {
   return true;
 }
 
-void engine_stop_glx(void) {
+void engine_glx_stop(void) {
   glXMakeCurrent(engine_glx_instance.display, 0, 0);
   glXDestroyContext(engine_glx_instance.display, engine_glx_instance.context);
 
@@ -85,7 +85,7 @@ void engine_stop_glx(void) {
   gladLoaderUnloadGLX();
 }
 
-void engine_update_glx(void) {
+void engine_glx_update(void) {
   glXSwapBuffers(engine_glx_instance.display, engine_glx_instance.window);
   while (XPending(engine_glx_instance.display)) {
     XEvent xev;

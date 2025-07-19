@@ -59,16 +59,16 @@ void engine_draw(void) {
 
 #ifdef ENGINE_GLX
 int main() {
-  engine_start_glx();
+  engine_glx_start();
   engine_scene_load();
 
   while(engine_glx_instance.engine_running) {
     engine_update();
     engine_draw();
-    engine_update_glx();
+    engine_glx_update();
   }
 
   engine_scene_unload();
-  engine_stop_glx();
+  engine_glx_stop();
 }
 #endif // ENGINE_GLX
