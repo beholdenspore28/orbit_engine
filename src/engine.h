@@ -6,13 +6,22 @@
 #include "engine_mathf.h"
 
 #include "glad/gl.h"
-#include "glad/glx.h"
-#include <X11/Xlib.h>
-#include <X11/Xutil.h>
 
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
+
+extern float (*engine_get_aspect_ratio)(void);
+
+#ifdef __linux__
+#define ENGINE_GLX
+#endif // __linux__
+
+#ifdef ENGINE_GLX
+
+#include "glad/glx.h"
+#include <X11/Xlib.h>
+#include <X11/Xutil.h>
 
 struct engine_glx {
   const char *window_title;
@@ -30,6 +39,8 @@ extern struct engine_glx engine_glx_instance;
 bool engine_start_glx(void);
 void engine_stop_glx(void);
 void engine_update_glx(void);
+
+#endif // ENGINE_GLX
 
 struct engine_file {
   size_t length;

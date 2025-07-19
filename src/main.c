@@ -57,6 +57,7 @@ void engine_draw(void) {
     // glBindVertexArray(0);
 }
 
+#ifdef ENGINE_GLX
 int main() {
   engine_start_glx();
   engine_scene_load();
@@ -70,3 +71,4 @@ int main() {
   engine_scene_unload();
   engine_stop_glx();
 }
+#endif // ENGINE_GLX

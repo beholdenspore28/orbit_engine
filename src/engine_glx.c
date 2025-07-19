@@ -1,5 +1,13 @@
 #include "engine.h"
 
+#ifdef ENGINE_GLX
+
+float engine_glx_get_aspect_ratio(void) {
+  return (float)engine_glx_instance.window_width / engine_glx_instance.window_height;
+}
+
+float (*engine_get_aspect_ratio)(void) = engine_glx_get_aspect_ratio;
+
 struct engine_glx engine_glx_instance = {
   .window_title = "Game Window",
   .engine_running = true,
@@ -89,3 +97,5 @@ void engine_update_glx(void) {
   }
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
+
+#endif // ENGINE_GLX
