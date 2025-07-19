@@ -29,11 +29,11 @@ void engine_scene_unload(void) {
   glDeleteProgram(hello_triangle_shader);
 }
 
-void engine_update(void) {
+void engine_scene_update(void) {
     camera_update(&camera);
 }
 
-void engine_draw(void) {
+void engine_scene_draw(void) {
     glUseProgram(hello_triangle_shader);
 
     {

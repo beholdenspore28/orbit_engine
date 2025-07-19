@@ -77,8 +77,8 @@ GLuint engine_shader_create(const char *vertex_shader_file_path,
 
 void engine_scene_load(void);
 void engine_scene_unload(void);
-void engine_update(void);
-void engine_draw(void);
+void engine_scene_update(void);
+void engine_scene_draw(void);
 
 typedef struct vector2 vector2;
 typedef struct vector3 vector3;

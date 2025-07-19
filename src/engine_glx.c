@@ -119,8 +119,8 @@ int main() {
   engine_scene_load();
 
   while(engine_is_running()) {
-    engine_update();
-    engine_draw();
+    engine_scene_update();
+    engine_scene_draw();
     engine_glx_update();
   }
 
