@@ -11,7 +11,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-// these function pointers will change depending on which platform you're building for
+// these function pointers will change depending on which platform you're
+// building for
 extern float (*engine_get_aspect_ratio)(void);
 extern bool (*engine_is_running)(void);
 
