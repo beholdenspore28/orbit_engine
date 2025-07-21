@@ -3,9 +3,9 @@
 #ifdef ENGINE_GLX
 
 struct engine_window {
-  const char *window_title;
+  char *window_title;
   bool engine_is_running;
-  const int window_width, window_height;
+  int window_width, window_height;
   Display *display;
   int screen;
   GLXContext context;
@@ -50,7 +50,7 @@ bool engine_glx_start(void) {
 
   Window root = RootWindow(engine_window_instance.display, engine_window_instance.screen);
 
-  GLint visual_attributes[] = {GLX_RGBA, GLX_DOUBLEBUFFER, None};
+  GLint visual_attributes[] = {GLX_RGBA, GLX_DEPTH_SIZE, 24, GLX_DOUBLEBUFFER, None};
   XVisualInfo *visual_info =
       glXChooseVisual(engine_window_instance.display, engine_window_instance.screen, visual_attributes);
 
@@ -106,8 +106,24 @@ void engine_glx_update(void) {
     XEvent xev;
     XNextEvent(engine_window_instance.display, &xev);
 
-    if (xev.type == KeyPress) {
-      engine_window_instance.engine_is_running = false;
+    switch (xev.type) {
+      case KeyPress: {
+          engine_window_instance.engine_is_running = false;
+        } break;
+      case Expose: {
+          engine_log("%d %d", engine_window_instance.window_width, engine_window_instance.window_height);
+        if (xev.xconfigure.width != engine_window_instance.window_width ||
+            xev.xconfigure.height != engine_window_instance.window_height) {
+          XWindowAttributes attribs;
+          XGetWindowAttributes(engine_window_instance.display, engine_window_instance.window, &attribs);
+          glViewport(0,0,attribs.width, attribs.height);
+          engine_window_instance.window_width = attribs.width;
+          engine_window_instance.window_height = attribs.height;
+        }
+      } break;
+      default: {
+                 engine_log("unhandled XEvent of type: %d", xev.type);
+      }break;
     }
   }
 }
