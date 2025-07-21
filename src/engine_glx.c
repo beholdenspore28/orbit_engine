@@ -122,7 +122,13 @@ void engine_glx_update(void) {
 
     switch (xev.type) {
     case KeyPress: {
-      // engine_window_instance.engine_is_running = false;
+      KeySym key_sym = XLookupKeysym(&xev.xkey, 0); // Convert keycode to keysym
+      // engine_log("Key Pressed: %s (KeySym: 0x%lx)\n", XKeysymToString(key_sym), key_sym); // Print the key pressed
+      if (key_sym == XK_Escape) { // Check for the Escape key
+        engine_is_running = false; // Set running to 0 to exit the loop
+      }
+    } break;
+    case KeyRelease: {
     } break;
     case Expose: {
       // engine_log("%d %d", engine_window_instance.window_width,
