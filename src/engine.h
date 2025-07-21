@@ -75,6 +75,9 @@ GLuint engine_shader_compile_source(const char *file_path,
 GLuint engine_shader_create(const char *vertex_shader_file_path,
                             const char *fragment_shader_file_path);
 
+GLuint engine_texture_alloc(const char *imageFile);
+void engine_texture_free(GLuint texture);
+
 void engine_scene_load(void);
 void engine_scene_unload(void);
 void engine_scene_update(void);
