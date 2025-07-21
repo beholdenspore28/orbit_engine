@@ -122,11 +122,11 @@ void engine_glx_update(void) {
 
     switch (xev.type) {
     case KeyPress: {
-      engine_window_instance.engine_is_running = false;
+      // engine_window_instance.engine_is_running = false;
     } break;
     case Expose: {
-      engine_log("%d %d", engine_window_instance.window_width,
-                 engine_window_instance.window_height);
+      // engine_log("%d %d", engine_window_instance.window_width,
+                 // engine_window_instance.window_height);
       if (xev.xconfigure.width != engine_window_instance.window_width ||
           xev.xconfigure.height != engine_window_instance.window_height) {
         XWindowAttributes attribs;
@@ -138,7 +138,7 @@ void engine_glx_update(void) {
       }
     } break;
     default: {
-      engine_log("unhandled XEvent of type: %d", xev.type);
+      engine_warn("unhandled XEvent of type: %d", xev.type);
     } break;
     }
   }
