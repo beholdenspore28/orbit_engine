@@ -45,11 +45,18 @@ void engine_scene_update(void) {
     KEYSPACE = 65,
     KEYLSHIFT = 50,
   };
+
+  // get input vector
   vector3 movedir = (vector3){
       input_keys[KEYD] - input_keys[KEYA],
       input_keys[KEYSPACE] - input_keys[KEYLSHIFT],
       input_keys[KEYW] - input_keys[KEYS],
   };
+  vector3_normalize(&movedir);
+  vector3_scale(&movedir, 0.1);
+
+  // translate to local directions
+  movedir = vector3_rotate(movedir, camera.transform.rotation);
 
   // engine_log(MATHF_VECTOR3_FORMAT_STRING(movedir));
   vector3_add(&camera.transform.position, movedir);
