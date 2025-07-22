@@ -5,6 +5,7 @@ struct mesh mesh_planet_alloc(const unsigned int subdivisions,
 
   list_GLuint indices_initial = NULL;
   list_vector3 vertices_initial = NULL;
+  list_vector3 normals_initial = NULL;
 
   { // create a baseline icosahedron.
     const GLfloat t = (1.0 + sqrt(5.0)) / 2.0;
@@ -30,6 +31,7 @@ struct mesh mesh_planet_alloc(const unsigned int subdivisions,
 
     indices_initial = list_GLuint_alloc_from_array(indices, indices_count);
     vertices_initial = list_vector3_alloc_from_array(vertices, vertices_count);
+    normals_initial = list_vector3_alloc_from_array(vertices, vertices_count);
   }
 
   // *===============================================*
@@ -76,6 +78,10 @@ struct mesh mesh_planet_alloc(const unsigned int subdivisions,
         list_vector3_add(&vertices_initial, m1);
         list_vector3_add(&vertices_initial, m2);
         list_vector3_add(&vertices_initial, m3);
+
+        list_vector3_add(&normals_initial, m1);
+        list_vector3_add(&normals_initial, m2);
+        list_vector3_add(&normals_initial, m3);
       }
 
       { // get new indices
@@ -115,6 +121,20 @@ struct mesh mesh_planet_alloc(const unsigned int subdivisions,
   }
 #endif
 
+#if 1 // calculate normals
+  for(unsigned int i = 0; i < list_GLuint_count(indices_initial); i+=3) {
+    const vector3 v1 = vertices_initial[indices_initial[i]];
+    const vector3 v2 = vertices_initial[indices_initial[i+1]];
+    const vector3 v3 = vertices_initial[indices_initial[i+2]];
+    const vector3 edge1 = vector3_subbed(v2, v1);
+    const vector3 edge2 = vector3_subbed(v3, v1);
+    const vector3 face_normal = vector3_normalized(vector3_cross(edge1,edge2));
+    normals_initial[indices_initial[i]] = face_normal;
+    normals_initial[indices_initial[i+1]] = face_normal;
+    normals_initial[indices_initial[i+2]] = face_normal;
+  }
+#endif
+
   GLuint VAO;
   glGenVertexArrays(1, &VAO);
   glBindVertexArray(VAO);
@@ -138,6 +158,15 @@ struct mesh mesh_planet_alloc(const unsigned int subdivisions,
                sizeof(*indices_initial) * list_GLuint_count(indices_initial),
                indices_initial, GL_STATIC_DRAW);
 
+  // normals
+  glBindBuffer(GL_ARRAY_BUFFER, VBOs[1]);
+  glBufferData(GL_ARRAY_BUFFER,
+               list_vector3_count(normals_initial) * sizeof(*normals_initial),
+               normals_initial, GL_STATIC_DRAW);
+
+  glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, (void *)0);
+  glEnableVertexAttribArray(1);
+
   glBindVertexArray(0);
 
   struct mesh mesh = {0};
@@ -149,6 +178,7 @@ struct mesh mesh_planet_alloc(const unsigned int subdivisions,
 
   list_GLuint_free(indices_initial);
   list_vector3_free(vertices_initial);
+  list_vector3_free(normals_initial);
 
   return mesh;
 }
