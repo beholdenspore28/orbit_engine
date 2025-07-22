@@ -1,4 +1,5 @@
 #include "engine.h"
+#include <time.h>
 
 DEFINE_LIST(vector2)
 DEFINE_LIST(vector3)
@@ -9,6 +10,34 @@ static struct camera camera = {0};
 static struct mesh planet_mesh = {0};
 static GLuint planet_texture = 0;
 
+struct engine_time {
+  double FPS, delta, last, current;
+} engine_time;
+
+struct engine_time engine_time_instance = {0};
+
+struct engine_time *engine_time_get(void) {
+  return &engine_time_instance;
+}
+
+void engine_time_update(void) {
+  struct timespec spec;
+  if (clock_gettime(CLOCK_MONOTONIC, &spec) != 0) {
+    engine_error("failed to get time spec.");
+    exit(0);
+  }
+
+  engine_time_instance.current  = spec.tv_sec + spec.tv_nsec * 1e-9;
+  engine_time_instance.delta    = engine_time_instance.current - engine_time_instance.last;
+  engine_time_instance.last     = engine_time_instance.current;
+  engine_time_instance.FPS      = 1 / engine_time_instance.delta;
+
+#if 0
+  engine_log("TIME: delta %lf | current %lf", engine_time_instance.delta,
+             engine_time_instance.current);
+#endif
+}
+
 static struct transform planet_transform = (struct transform){
     .position = (vector3){0, 0, 0},
     .scale = (vector3){1, 1, 1},
@@ -18,7 +47,7 @@ static struct transform planet_transform = (struct transform){
 void engine_scene_load(void) {
   glEnable(GL_DEPTH_TEST);
   glEnable(GL_CULL_FACE);
-  glClearColor(0.2, 0.3, 0.4, 1);
+  glClearColor(0, 0, 0, 1);
 
   hello_triangle_shader =
       engine_shader_create("res/shaders/hello_triangle_vertex.glsl",
@@ -26,7 +55,7 @@ void engine_scene_load(void) {
 
   planet_texture = engine_texture_alloc("res/textures/grass_1.jpeg");
   camera = camera_alloc();
-  planet_mesh = mesh_planet_alloc(4, 1);
+  planet_mesh = mesh_planet_alloc(6, 1);
 }
 
 void engine_scene_unload(void) {
@@ -37,21 +66,19 @@ void engine_scene_unload(void) {
 }
 
 void engine_scene_update(void) {
-  enum {
-    KEYW = 25,
-    KEYS = 39,
-    KEYA = 38,
-    KEYD = 40,
-    KEYSPACE = 65,
-    KEYLSHIFT = 50,
+  float lookY =
+      engine_key_get(ENGINE_KEY_PERIOD) - engine_key_get(ENGINE_KEY_COMMA);
+  lookY *= 0.05;
+
+  camera.transform.rotation =
+      quat_rotate_euler(camera.transform.rotation, (vector3){0, lookY, 0});
+
+  vector3 movedir = (vector3){
+      engine_key_get(ENGINE_KEY_D) - engine_key_get(ENGINE_KEY_A),
+      engine_key_get(ENGINE_KEY_SPACE) - engine_key_get(ENGINE_KEY_LSHIFT),
+      engine_key_get(ENGINE_KEY_W) - engine_key_get(ENGINE_KEY_S),
   };
 
-  // get input vector
-  vector3 movedir = (vector3){
-      input_keys[KEYD] - input_keys[KEYA],
-      input_keys[KEYSPACE] - input_keys[KEYLSHIFT],
-      input_keys[KEYW] - input_keys[KEYS],
-  };
   vector3_normalize(&movedir);
   vector3_scale(&movedir, 0.1);
 
@@ -68,6 +95,7 @@ void engine_scene_update(void) {
 void engine_scene_draw(void) {
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   glUseProgram(hello_triangle_shader);
+  //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
   {
     GLint camera_matrix_location =
@@ -90,4 +118,19 @@ void engine_scene_draw(void) {
 
   glBindVertexArray(planet_mesh.VAO);
   glDrawElements(GL_TRIANGLES, planet_mesh.indices_count, GL_UNSIGNED_INT, 0);
+}
+
+int main() {
+  engine_start();
+  engine_scene_load();
+
+  while (engine_is_running()) {
+    engine_time_update();
+    engine_scene_update();
+    engine_scene_draw();
+    engine_update();
+  }
+
+  engine_scene_unload();
+  engine_stop();
 }

@@ -148,20 +148,19 @@ static inline float mathf_angle_delta(const float a, const float b) {
 static inline float mathf_fraction(float x) { return x - mathf_floor(x); }
 
 // Single dimensional pseudo-random noise
-static inline float mathf_noise1(unsigned int x) {
+static inline float mathf_noise1(float x) {
   float wave = mathf_sin(x * 53) * 6151;
   return mathf_fraction(wave);
 }
 
 // Two dimensional pseudo-random noise
-static inline float mathf_noise2(unsigned int x, unsigned int y) {
+static inline float mathf_noise2(float x, float y) {
   float wave = mathf_sin(x * 53 + y * 97) * 6151;
   return mathf_fraction(wave);
 }
 
 // Three dimensional pseudo-random noise
-static inline float mathf_noise3(unsigned int x, unsigned int y,
-                                 unsigned int z) {
+static inline float mathf_noise3(float x, float y, float z) {
   float wave = mathf_sin(x * 53 + y * 97 + z * 193) * 6151;
   return mathf_fraction(wave);
 }

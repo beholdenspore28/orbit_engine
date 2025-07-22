@@ -11,6 +11,7 @@ struct engine_window {
   GLXContext context;
   Window window;
   Colormap colormap;
+  XVisualInfo *visual_info;
 };
 
 struct engine_window engine_window_instance = {
@@ -20,20 +21,7 @@ struct engine_window engine_window_instance = {
     .window_height = 480,
 };
 
-float engine_glx_get_aspect_ratio(void) {
-  return (float)engine_window_instance.window_width /
-         engine_window_instance.window_height;
-}
-
-float (*engine_get_aspect_ratio)(void) = engine_glx_get_aspect_ratio;
-
-bool engine_glx_is_running(void) {
-  return engine_window_instance.engine_is_running;
-}
-
-bool (*engine_is_running)(void) = engine_glx_is_running;
-
-bool engine_glx_start(void) {
+bool engine_start(void) {
   engine_window_instance.display = XOpenDisplay(NULL);
   if (engine_window_instance.display == NULL) {
     engine_error("cannot connect to X server");
@@ -56,12 +44,12 @@ bool engine_glx_start(void) {
 
   GLint visual_attributes[] = {GLX_RGBA, GLX_DEPTH_SIZE, 24, GLX_DOUBLEBUFFER,
                                None};
-  XVisualInfo *visual_info =
+  engine_window_instance.visual_info =
       glXChooseVisual(engine_window_instance.display,
                       engine_window_instance.screen, visual_attributes);
 
   engine_window_instance.colormap = XCreateColormap(
-      engine_window_instance.display, root, visual_info->visual, AllocNone);
+      engine_window_instance.display, root, engine_window_instance.visual_info->visual, AllocNone);
 
   XSetWindowAttributes attributes;
   attributes.event_mask = ExposureMask | KeyPressMask | KeyReleaseMask;
@@ -70,7 +58,7 @@ bool engine_glx_start(void) {
   engine_window_instance.window = XCreateWindow(
       engine_window_instance.display, root, 0, 0,
       engine_window_instance.window_width, engine_window_instance.window_height,
-      0, visual_info->depth, InputOutput, visual_info->visual,
+      0, engine_window_instance.visual_info->depth, InputOutput, engine_window_instance.visual_info->visual,
       CWColormap | CWEventMask, &attributes);
 
   XMapWindow(engine_window_instance.display, engine_window_instance.window);
@@ -83,7 +71,7 @@ bool engine_glx_start(void) {
   }
 
   engine_window_instance.context = glXCreateContext(
-      engine_window_instance.display, visual_info, NULL, GL_TRUE);
+      engine_window_instance.display, engine_window_instance.visual_info, NULL, GL_TRUE);
   glXMakeCurrent(engine_window_instance.display, engine_window_instance.window,
                  engine_window_instance.context);
 
@@ -108,10 +96,11 @@ bool engine_glx_start(void) {
   }
 
   glViewport(0, 0, gwa.width, gwa.height);
+
   return true;
 }
 
-void engine_glx_stop(void) {
+void engine_stop(void) {
   glXMakeCurrent(engine_window_instance.display, 0, 0);
   glXDestroyContext(engine_window_instance.display,
                     engine_window_instance.context);
@@ -120,13 +109,17 @@ void engine_glx_stop(void) {
   XFreeColormap(engine_window_instance.display,
                 engine_window_instance.colormap);
   XCloseDisplay(engine_window_instance.display);
+  XFree(engine_window_instance.visual_info);
 
   gladLoaderUnloadGLX();
 }
 
+enum { INPUT_KEYS_MAX = 256 };
 int input_keys[INPUT_KEYS_MAX];
 
-void engine_glx_update(void) {
+bool engine_key_get(int keycode) { return input_keys[keycode]; }
+
+void engine_update(void) {
   glXSwapBuffers(engine_window_instance.display, engine_window_instance.window);
   while (XPending(engine_window_instance.display)) {
     XEvent xev;
@@ -136,13 +129,13 @@ void engine_glx_update(void) {
     case KeyPress: {
       if (input_keys[xev.xkey.keycode] == 0) {
         input_keys[xev.xkey.keycode] = 1;
-        engine_log("pressed keycode %d", xev.xkey.keycode);
+        // engine_log("pressed keycode %d", xev.xkey.keycode);
       }
     } break;
 
     case KeyRelease: {
       input_keys[xev.xkey.keycode] = 0;
-      engine_log("released keycode %d", xev.xkey.keycode);
+      // engine_log("released keycode %d", xev.xkey.keycode);
     } break;
 
     case Expose: {
@@ -165,18 +158,13 @@ void engine_glx_update(void) {
   }
 }
 
-int main() {
-  engine_glx_start();
-  engine_scene_load();
+float engine_get_aspect_ratio(void) {
+  return (float)engine_window_instance.window_width /
+         engine_window_instance.window_height;
+}
 
-  while (engine_is_running()) {
-    engine_scene_update();
-    engine_scene_draw();
-    engine_glx_update();
-  }
-
-  engine_scene_unload();
-  engine_glx_stop();
+bool engine_is_running(void) {
+  return engine_window_instance.engine_is_running;
 }
 
 #endif // ENGINE_GLX

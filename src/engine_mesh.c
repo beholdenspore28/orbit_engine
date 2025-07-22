@@ -147,5 +147,8 @@ struct mesh mesh_planet_alloc(const unsigned int subdivisions,
   mesh.vertices_count = list_vector3_count(vertices_initial);
   mesh.indices_count = list_GLuint_count(indices_initial);
 
+  list_GLuint_free(indices_initial);
+  list_vector3_free(vertices_initial);
+
   return mesh;
 }

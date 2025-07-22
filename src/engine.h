@@ -1,6 +1,7 @@
 #ifndef ENGINE_H
 #define ENGINE_H
 
+#define _POSIX_C_SOURCE 200809L
 #include "engine_list.h"
 #include "engine_logging.h"
 #include "engine_mathf.h"
@@ -11,18 +12,15 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-// these function pointers will change depending on which platform you're
-// building for
-extern float (*engine_get_aspect_ratio)(void);
-extern bool (*engine_is_running)(void);
+bool engine_start(void);
+void engine_stop(void);
+void engine_update(void);
+float engine_get_aspect_ratio(void);
+bool engine_is_running(void);
 
 #ifdef __linux__
 #define ENGINE_GLX
 #endif // __linux__
-
-#ifdef _WIN32
-#define ENGINE_WGL
-#endif // _WIN32
 
 #ifdef ENGINE_GLX
 
@@ -34,16 +32,14 @@ extern bool (*engine_is_running)(void);
 struct engine_window;
 extern struct engine_window engine_window_instance;
 
-bool engine_glx_start(void);
-void engine_glx_stop(void);
-void engine_glx_update(void);
-
 #endif // ENGINE_GLX
+
+#ifdef _WIN32
+#define ENGINE_WGL
+#endif // _WIN32
 
 #ifdef ENGINE_WGL
 #endif // ENGINE_WGL
-
-#include "engine_input.h"
 
 struct engine_file {
   size_t length;
@@ -86,6 +82,20 @@ void engine_scene_load(void);
 void engine_scene_unload(void);
 void engine_scene_update(void);
 void engine_scene_draw(void);
+
+enum {
+  ENGINE_KEY_W = 25,
+  ENGINE_KEY_S = 39,
+  ENGINE_KEY_A = 38,
+  ENGINE_KEY_D = 40,
+  ENGINE_KEY_SPACE = 65,
+  ENGINE_KEY_LSHIFT = 50,
+  ENGINE_KEY_LEFT_CONTROL = 37,
+  ENGINE_KEY_COMMA = 59,
+  ENGINE_KEY_PERIOD = 60,
+};
+
+bool engine_key_get(int keycode);
 
 typedef struct vector2 vector2;
 typedef struct vector3 vector3;

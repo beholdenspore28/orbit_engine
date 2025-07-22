@@ -2,7 +2,7 @@ BUILD_DIR = build
 
 GCC = gcc -fanalyzer
 CLANG = clang -fsanitize=address,undefined
-CC = clang
+CC = $(CLANG)
 
 CFLAGS_DEBUG = -g3 
 CFLAGS_RELEASE = -O3 -flto
@@ -13,7 +13,7 @@ CFLAGS = -Wall \
 				 -std=c11 \
 				 $(CFLAGS_DEBUG)
 
-LIBS := -lm -lopenal -lalut -lX11
+LIBS := -lm -lopenal -lalut -lX11 -lrt
 
 SRC = $(wildcard src/*.c)
 OBJ = $(patsubst src/%.c, build/%.o, $(SRC))
