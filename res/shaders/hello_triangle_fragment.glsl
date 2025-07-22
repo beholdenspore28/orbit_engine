@@ -14,7 +14,7 @@ void main() {
   vec3 colorY = texture(u_diffuse_map, fs_in.position.xz).rgb;
   vec3 colorZ = texture(u_diffuse_map, fs_in.position.xy).rgb;
 
-  float blend_sharpness = 1;
+  float blend_sharpness = 2;
 
   vec3 blend_weight = pow(abs(normalize(fs_in.position)), vec3(blend_sharpness));
   blend_weight /= dot(blend_weight, vec3(1));

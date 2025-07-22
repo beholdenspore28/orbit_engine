@@ -53,7 +53,7 @@ void engine_scene_load(void) {
       engine_shader_create("res/shaders/hello_triangle_vertex.glsl",
                            "res/shaders/hello_triangle_fragment.glsl");
 
-  planet_texture = engine_texture_alloc("res/textures/grass_1.jpeg");
+  planet_texture = engine_texture_alloc("res/textures/moon_1.jpeg");
   camera = camera_alloc();
   planet_mesh = mesh_planet_alloc(6, 1);
 }
