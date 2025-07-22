@@ -27,6 +27,7 @@ extern bool (*engine_is_running)(void);
 #ifdef ENGINE_GLX
 
 #include "glad/glx.h"
+#include <X11/XKBlib.h>
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 
@@ -41,6 +42,8 @@ void engine_glx_update(void);
 
 #ifdef ENGINE_WGL
 #endif // ENGINE_WGL
+
+#include "engine_input.h"
 
 struct engine_file {
   size_t length;

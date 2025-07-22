@@ -24,7 +24,7 @@ void engine_scene_load(void) {
       engine_shader_create("res/shaders/hello_triangle_vertex.glsl",
                            "res/shaders/hello_triangle_fragment.glsl");
 
-  planet_texture = engine_texture_alloc("res/textures/test.png");
+  planet_texture = engine_texture_alloc("res/textures/grass_1.jpeg");
   camera = camera_alloc();
   planet_mesh = mesh_planet_alloc(4, 1);
 }
@@ -37,9 +37,25 @@ void engine_scene_unload(void) {
 }
 
 void engine_scene_update(void) {
+  enum {
+    KEYW = 25,
+    KEYS = 39,
+    KEYA = 38,
+    KEYD = 40,
+    KEYSPACE = 65,
+    KEYLSHIFT = 50,
+  };
+  vector3 movedir = (vector3){
+      input_keys[KEYD] - input_keys[KEYA],
+      input_keys[KEYSPACE] - input_keys[KEYLSHIFT],
+      input_keys[KEYW] - input_keys[KEYS],
+  };
+
+  // engine_log(MATHF_VECTOR3_FORMAT_STRING(movedir));
+  vector3_add(&camera.transform.position, movedir);
   camera_update(&camera);
-  planet_transform.rotation =
-      quat_rotate_euler(planet_transform.rotation, (vector3){0.01, 0.01, 0.01});
+  planet_transform.rotation = quat_rotate_euler(planet_transform.rotation,
+                                                (vector3){0.005, 0.005, 0.005});
 }
 
 void engine_scene_draw(void) {

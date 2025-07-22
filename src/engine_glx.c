@@ -13,24 +13,25 @@ struct engine_window {
   Colormap colormap;
 };
 
-float engine_glx_get_aspect_ratio(void) {
-  return (float)engine_window_instance.window_width /
-         engine_window_instance.window_height;
-}
-
-bool engine_glx_is_running(void) {
-  return engine_window_instance.engine_is_running;
-}
-
-float (*engine_get_aspect_ratio)(void) = engine_glx_get_aspect_ratio;
-bool (*engine_is_running)(void) = engine_glx_is_running;
-
 struct engine_window engine_window_instance = {
     .window_title = "Game Window",
     .engine_is_running = true,
     .window_width = 640,
     .window_height = 480,
 };
+
+float engine_glx_get_aspect_ratio(void) {
+  return (float)engine_window_instance.window_width /
+         engine_window_instance.window_height;
+}
+
+float (*engine_get_aspect_ratio)(void) = engine_glx_get_aspect_ratio;
+
+bool engine_glx_is_running(void) {
+  return engine_window_instance.engine_is_running;
+}
+
+bool (*engine_is_running)(void) = engine_glx_is_running;
 
 bool engine_glx_start(void) {
   engine_window_instance.display = XOpenDisplay(NULL);
@@ -97,6 +98,15 @@ bool engine_glx_start(void) {
   XWindowAttributes gwa;
   XGetWindowAttributes(engine_window_instance.display,
                        engine_window_instance.window, &gwa);
+
+  // Enable detectable auto-repeat
+  Bool autorepeat_supported;
+  XkbSetDetectableAutoRepeat(engine_window_instance.display, True,
+                             &autorepeat_supported); //
+  if (!autorepeat_supported) {
+    engine_warn("Detectable auto-repeat not supported by X server.\n"); //
+  }
+
   glViewport(0, 0, gwa.width, gwa.height);
   return true;
 }
@@ -114,6 +124,8 @@ void engine_glx_stop(void) {
   gladLoaderUnloadGLX();
 }
 
+int input_keys[INPUT_KEYS_MAX];
+
 void engine_glx_update(void) {
   glXSwapBuffers(engine_window_instance.display, engine_window_instance.window);
   while (XPending(engine_window_instance.display)) {
@@ -122,17 +134,20 @@ void engine_glx_update(void) {
 
     switch (xev.type) {
     case KeyPress: {
-      KeySym key_sym = XLookupKeysym(&xev.xkey, 0); // Convert keycode to keysym
-      // engine_log("Key Pressed: %s (KeySym: 0x%lx)\n", XKeysymToString(key_sym), key_sym); // Print the key pressed
-      if (key_sym == XK_Escape) { // Check for the Escape key
-        engine_is_running = false; // Set running to 0 to exit the loop
+      if (input_keys[xev.xkey.keycode] == 0) {
+        input_keys[xev.xkey.keycode] = 1;
+        engine_log("pressed keycode %d", xev.xkey.keycode);
       }
     } break;
+
     case KeyRelease: {
+      input_keys[xev.xkey.keycode] = 0;
+      engine_log("released keycode %d", xev.xkey.keycode);
     } break;
+
     case Expose: {
       // engine_log("%d %d", engine_window_instance.window_width,
-                 // engine_window_instance.window_height);
+      // engine_window_instance.window_height);
       if (xev.xconfigure.width != engine_window_instance.window_width ||
           xev.xconfigure.height != engine_window_instance.window_height) {
         XWindowAttributes attribs;
