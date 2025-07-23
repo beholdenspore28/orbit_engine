@@ -11,49 +11,49 @@ struct quaternion {
   float x, y, z, w;
 };
 
-struct vector2 {
+struct vec2 {
   float x, y;
 };
 
-#define vector2_one(magnitude) vector2_scaled((struct vector2){1, 1}, magnitude)
-#define vector2_zero(magnitude) (struct vector2){0,0,0}
-#define vector2_up(magnitude) vector2_scaled((struct vector2){0, 1}, magnitude)
-#define vector2_down(magnitude) vector2_scaled((struct vector2){0, -1}, magnitude)
-#define vector2_left(magnitude) vector2_scaled((struct vector2){-1, 0}, magnitude)
-#define vector2_right(magnitude) vector2_scaled((struct vector2){1, 0}, magnitude)
+#define vec2_one(magnitude) vec2_scaled((struct vec2){1, 1}, magnitude)
+#define vec2_zero(magnitude) (struct vec2){0,0,0}
+#define vec2_up(magnitude) vec2_scaled((struct vec2){0, 1}, magnitude)
+#define vec2_down(magnitude) vec2_scaled((struct vec2){0, -1}, magnitude)
+#define vec2_left(magnitude) vec2_scaled((struct vec2){-1, 0}, magnitude)
+#define vec2_right(magnitude) vec2_scaled((struct vec2){1, 0}, magnitude)
 
-struct vector3 {
+struct vec3 {
   float x, y, z;
 };
 
-#define vector3_one(magnitude) vector3_scaled((struct vector3){1, 1, 1}, magnitude)
-#define vector3_zero(magnitude) (struct vector3){0,0,0}
-#define vector3_up(magnitude) vector3_scaled((struct vector3){0, 1, 0}, magnitude)
-#define vector3_down(magnitude) vector3_scaled((struct vector3){0, -1, 0}, magnitude)
-#define vector3_left(magnitude) vector3_scaled((struct vector3){-1, 0, 0}, magnitude)
-#define vector3_right(magnitude) vector3_scaled((struct vector3){1, 0, 0}, magnitude)
-#define vector3_forward(magnitude) vector3_scaled((struct vector3){0, 0, 1}, magnitude)
-#define vector3_back(magnitude) vector3_scaled((struct vector3){0, 0, -1}, magnitude)
+#define vec3_one(magnitude) vec3_scaled((struct vec3){1, 1, 1}, magnitude)
+#define vec3_zero(magnitude) (struct vec3){0,0,0}
+#define vec3_up(magnitude) vec3_scaled((struct vec3){0, 1, 0}, magnitude)
+#define vec3_down(magnitude) vec3_scaled((struct vec3){0, -1, 0}, magnitude)
+#define vec3_left(magnitude) vec3_scaled((struct vec3){-1, 0, 0}, magnitude)
+#define vec3_right(magnitude) vec3_scaled((struct vec3){1, 0, 0}, magnitude)
+#define vec3_forward(magnitude) vec3_scaled((struct vec3){0, 0, 1}, magnitude)
+#define vec3_back(magnitude) vec3_scaled((struct vec3){0, 0, -1}, magnitude)
 
-struct vector4 {
+struct vec4 {
   float x, y, z, w;
 };
 
-#define vector4_one(magnitude) vector4_scaled((struct vector4){1, 1, 1}, magnitude)
-#define vector4_zero(magnitude) (struct vector4){0,0,0}
-#define vector4_up(magnitude) vector4_scaled((struct vector4){0, 1, 0}, magnitude)
-#define vector4_down(magnitude) vector4_scaled((struct vector4){0, -1, 0}, magnitude)
-#define vector4_left(magnitude) vector4_scaled((struct vector4){-1, 0, 0}, magnitude)
-#define vector4_right(magnitude) vector4_scaled((struct vector4){1, 0, 0}, magnitude)
-#define vector4_forward(magnitude) vector4_scaled((struct vector4){0, 0, 1}, magnitude)
-#define vector4_back(magnitude) vector4_scaled((struct vector4){0, 0, -1}, magnitude)
-#define vector4_future(magnitude) vector4_scaled((struct vector4){0, 0, 0, 1}, magnitude)
-#define vector4_past(magnitude) vector4_scaled((struct vector4){0, 0, 0, -1}, magnitude)
+#define vec4_one(magnitude) vec4_scaled((struct vec4){1, 1, 1}, magnitude)
+#define vec4_zero(magnitude) (struct vec4){0,0,0}
+#define vec4_up(magnitude) vec4_scaled((struct vec4){0, 1, 0}, magnitude)
+#define vec4_down(magnitude) vec4_scaled((struct vec4){0, -1, 0}, magnitude)
+#define vec4_left(magnitude) vec4_scaled((struct vec4){-1, 0, 0}, magnitude)
+#define vec4_right(magnitude) vec4_scaled((struct vec4){1, 0, 0}, magnitude)
+#define vec4_forward(magnitude) vec4_scaled((struct vec4){0, 0, 1}, magnitude)
+#define vec4_back(magnitude) vec4_scaled((struct vec4){0, 0, -1}, magnitude)
+#define vec4_future(magnitude) vec4_scaled((struct vec4){0, 0, 0, 1}, magnitude)
+#define vec4_past(magnitude) vec4_scaled((struct vec4){0, 0, 0, -1}, magnitude)
 
 struct transform {
-  struct vector3 position;
+  struct vec3 position;
   struct quaternion rotation;
-  struct vector3 scale;
+  struct vec3 scale;
 };
 
 #define mathf_fmod fmodf
@@ -63,9 +63,9 @@ struct transform {
 #define mathf_pow powf
 #define mathf_floor floorf
 
-#define MATHF_VECTOR4_FORMAT_STRING(v) "{%f %f %f %f}\n", v.x, v.y, v.z, v.w
-#define MATHF_VECTOR3_FORMAT_STRING(v) "{%f %f %f}\n", v.x, v.y, v.z
-#define MATHF_VECTOR2_FORMAT_STRING(v) "{%f %f}\n", v.x, v.y
+#define MATHF_vec4_FORMAT_STRING(v) "{%f %f %f %f}\n", v.x, v.y, v.z, v.w
+#define MATHF_vec3_FORMAT_STRING(v) "{%f %f %f}\n", v.x, v.y, v.z
+#define MATHF_vec2_FORMAT_STRING(v) "{%f %f}\n", v.x, v.y
 
 #define MATHF_QUAT_FORMAT_STRING(q) "{%f %f %f %f}\n", q.x, q.y, q.z, q.w
 
@@ -253,100 +253,100 @@ static inline float mathf_noise3_fbm_warped(float x, float y, float z,
   return mathf_noise3_fbm(fbm1, fbm2, fbm3);
 }
 
-static inline void vector2_sub(struct vector2 *a, struct vector2 b) {
+static inline void vec2_sub(struct vec2 *a, struct vec2 b) {
   a->x -= b.x;
   a->y -= b.y;
 }
 
-static inline struct vector2 vector2_subbed(struct vector2 a,
-                                            struct vector2 b) {
-  return (struct vector2){
+static inline struct vec2 vec2_subbed(struct vec2 a,
+                                            struct vec2 b) {
+  return (struct vec2){
       a.x - b.x,
       a.y - b.y,
   };
 }
 
-static inline void vector2_add(struct vector2 *a, struct vector2 b) {
+static inline void vec2_add(struct vec2 *a, struct vec2 b) {
   a->x += b.x;
   a->y += b.y;
 }
 
-static inline struct vector2 vector2_added(struct vector2 a, struct vector2 b) {
-  return (struct vector2){
+static inline struct vec2 vec2_added(struct vec2 a, struct vec2 b) {
+  return (struct vec2){
       a.x + b.x,
       a.y + b.y,
   };
 }
 
-static inline void vector2_scale(struct vector2 *v, const float s) {
+static inline void vec2_scale(struct vec2 *v, const float s) {
   v->x *= s;
   v->y *= s;
 }
 
-static inline struct vector2 vector2_scaled(const struct vector2 v,
+static inline struct vec2 vec2_scaled(const struct vec2 v,
                                             const float s) {
-  return (struct vector2){
+  return (struct vec2){
       v.x * s,
       v.y * s,
   };
 }
 
-static inline float vector2_square_magnitude(const struct vector2 v) {
+static inline float vec2_square_magnitude(const struct vec2 v) {
   return v.x * v.x + v.y * v.y;
 }
 
-static inline float vector2_magnitude(const struct vector2 v) {
-  return sqrtf(vector2_square_magnitude(v));
+static inline float vec2_magnitude(const struct vec2 v) {
+  return sqrtf(vec2_square_magnitude(v));
 }
 
-static inline float vector2_square_distance(const struct vector2 a,
-                                            const struct vector2 b) {
-  return vector2_square_magnitude(vector2_subbed(b, a));
+static inline float vec2_square_distance(const struct vec2 a,
+                                            const struct vec2 b) {
+  return vec2_square_magnitude(vec2_subbed(b, a));
 }
 
-static inline float vector2_distance(const struct vector2 a,
-                                     const struct vector2 b) {
-  return vector2_magnitude(vector2_subbed(b, a));
+static inline float vec2_distance(const struct vec2 a,
+                                     const struct vec2 b) {
+  return vec2_magnitude(vec2_subbed(b, a));
 }
 
-static inline float vector2_dot(const struct vector2 a,
-                                const struct vector2 b) {
+static inline float vec2_dot(const struct vec2 a,
+                                const struct vec2 b) {
   return a.x * b.x + a.y * b.y;
 }
 
-static inline struct vector2 vector2_lerp(struct vector2 a, struct vector2 b,
+static inline struct vec2 vec2_lerp(struct vec2 a, struct vec2 b,
                                           float t) {
-  return (struct vector2){
+  return (struct vec2){
       .x = a.x + (b.x - a.x) * t,
       .y = a.y + (b.y - a.y) * t,
   };
 }
 
-static inline struct vector2 vector2_min(struct vector2 a, struct vector2 b) {
-  return (struct vector2){
+static inline struct vec2 vec2_min(struct vec2 a, struct vec2 b) {
+  return (struct vec2){
       .x = a.x <= b.x ? a.x : b.x,
       .y = a.y <= b.y ? a.y : b.y,
   };
 }
 
-static inline struct vector2 vector2_max(struct vector2 a, struct vector2 b) {
-  return (struct vector2){
+static inline struct vec2 vec2_max(struct vec2 a, struct vec2 b) {
+  return (struct vec2){
       .x = a.x >= b.x ? a.x : b.x,
       .y = a.y >= b.y ? a.y : b.y,
   };
 }
 
-static inline int vector2_equal(struct vector2 a, struct vector2 b) {
+static inline int vec2_equal(struct vec2 a, struct vec2 b) {
   return fabs(a.x - b.x) <= MATHF_FLOAT_EPSILON &&
          fabs(a.y - b.y) <= MATHF_FLOAT_EPSILON;
 }
 
-static inline float vector2_angle(struct vector2 v1, struct vector2 v2) {
-  float dot = vector2_dot(v1, v2);
-  float mag1 = vector2_magnitude(v1);
-  float mag2 = vector2_magnitude(v2);
+static inline float vec2_angle(struct vec2 v1, struct vec2 v2) {
+  float dot = vec2_dot(v1, v2);
+  float mag1 = vec2_magnitude(v1);
+  float mag2 = vec2_magnitude(v2);
 
-  // Handle potential division by zero if a vector has zero magnitude
+  // Handle potential division by zero if a vec has zero magnitude
   if (mag1 == 0 || mag2 == 0) {
     return 0.0;
   }
@@ -357,139 +357,139 @@ static inline float vector2_angle(struct vector2 v1, struct vector2 v2) {
   return acos(cos_theta); // Returns angle in radians
 }
 
-static inline struct vector2 vector2_normalized(struct vector2 v) {
-  float m = vector2_magnitude(v);
+static inline struct vec2 vec2_normalized(struct vec2 v) {
+  float m = vec2_magnitude(v);
   if (m == 0) { // prevent NAN values
-    return (struct vector2){0, 0};
+    return (struct vec2){0, 0};
   }
-  return vector2_scaled(v, 1 / m);
+  return vec2_scaled(v, 1 / m);
 }
 
-static inline void vector2_normalize(struct vector2 *v) {
-  float m = vector2_magnitude(*v);
+static inline void vec2_normalize(struct vec2 *v) {
+  float m = vec2_magnitude(*v);
   if (m == 0) { // prevent NAN values
-    *v = (struct vector2){0, 0};
+    *v = (struct vec2){0, 0};
     return;
   }
-  vector2_scale(v, 1 / m);
+  vec2_scale(v, 1 / m);
 }
 
-static inline void vector3_scale(struct vector3 *v, const float s) {
+static inline void vec3_scale(struct vec3 *v, const float s) {
   v->x *= s;
   v->y *= s;
   v->z *= s;
 }
 
-static inline struct vector3 vector3_scaled(const struct vector3 v,
+static inline struct vec3 vec3_scaled(const struct vec3 v,
                                             const float s) {
-  return (struct vector3){
+  return (struct vec3){
       v.x * s,
       v.y * s,
       v.z * s,
   };
 }
 
-static inline void vector3_sub(struct vector3 *a, struct vector3 b) {
+static inline void vec3_sub(struct vec3 *a, struct vec3 b) {
   a->x -= b.x;
   a->y -= b.y;
   a->z -= b.z;
 }
 
-static inline struct vector3 vector3_subbed(struct vector3 a,
-                                            struct vector3 b) {
-  return (struct vector3){
+static inline struct vec3 vec3_subbed(struct vec3 a,
+                                            struct vec3 b) {
+  return (struct vec3){
       a.x - b.x,
       a.y - b.y,
       a.z - b.z,
   };
 }
 
-static inline void vector3_add(struct vector3 *a, struct vector3 b) {
+static inline void vec3_add(struct vec3 *a, struct vec3 b) {
   a->x += b.x;
   a->y += b.y;
   a->z += b.z;
 }
 
-static inline struct vector3 vector3_added(struct vector3 a, struct vector3 b) {
-  return (struct vector3){
+static inline struct vec3 vec3_added(struct vec3 a, struct vec3 b) {
+  return (struct vec3){
       a.x + b.x,
       a.y + b.y,
       a.z + b.z,
   };
 }
 
-static inline float vector3_square_magnitude(const struct vector3 v) {
+static inline float vec3_square_magnitude(const struct vec3 v) {
   return v.x * v.x + v.y * v.y + v.z * v.z;
 }
 
-static inline float vector3_magnitude(const struct vector3 v) {
-  return sqrtf(vector3_square_magnitude(v));
+static inline float vec3_magnitude(const struct vec3 v) {
+  return sqrtf(vec3_square_magnitude(v));
 }
 
-static inline struct vector3 vector3_normalized(struct vector3 v) {
-  float m = vector3_magnitude(v);
+static inline struct vec3 vec3_normalized(struct vec3 v) {
+  float m = vec3_magnitude(v);
   if (m == 0) { // prevent NAN values
-    return (struct vector3){0, 0, 0};
+    return (struct vec3){0, 0, 0};
   }
-  return vector3_scaled(v, 1 / m);
+  return vec3_scaled(v, 1 / m);
 }
 
-static inline void vector3_normalize(struct vector3 *v) {
-  float m = vector3_magnitude(*v);
+static inline void vec3_normalize(struct vec3 *v) {
+  float m = vec3_magnitude(*v);
   if (m == 0) { // prevent NAN values
-    *v = (struct vector3){0, 0, 0};
+    *v = (struct vec3){0, 0, 0};
     return;
   }
-  vector3_scale(v, 1 / m);
+  vec3_scale(v, 1 / m);
 }
 
-static inline float vector3_square_distance(const struct vector3 a,
-                                            const struct vector3 b) {
-  return vector3_square_magnitude(vector3_subbed(b, a));
+static inline float vec3_square_distance(const struct vec3 a,
+                                            const struct vec3 b) {
+  return vec3_square_magnitude(vec3_subbed(b, a));
 }
 
-static inline float vector3_distance(const struct vector3 a,
-                                     const struct vector3 b) {
-  return vector3_magnitude(vector3_subbed(b, a));
+static inline float vec3_distance(const struct vec3 a,
+                                     const struct vec3 b) {
+  return vec3_magnitude(vec3_subbed(b, a));
 }
 
-static inline float vector3_dot(const struct vector3 a,
-                                const struct vector3 b) {
+static inline float vec3_dot(const struct vec3 a,
+                                const struct vec3 b) {
   return a.x * b.x + a.y * b.y + a.z * b.z;
 }
 
-static inline struct vector3 vector3_cross(struct vector3 a, struct vector3 b) {
-  return (struct vector3){.x = (a.y * b.z) - (a.z * b.y),
+static inline struct vec3 vec3_cross(struct vec3 a, struct vec3 b) {
+  return (struct vec3){.x = (a.y * b.z) - (a.z * b.y),
                           .y = -((a.x * b.z) - (a.z * b.x)),
                           .z = (a.x * b.y) - (a.y * b.x)};
 }
 
-static inline struct vector3 vector3_lerp(struct vector3 a, struct vector3 b,
+static inline struct vec3 vec3_lerp(struct vec3 a, struct vec3 b,
                                           float t) {
-  return (struct vector3){
+  return (struct vec3){
       .x = a.x + (b.x - a.x) * t,
       .y = a.y + (b.y - a.y) * t,
       .z = a.z + (b.z - a.z) * t,
   };
 }
 
-static inline struct vector3 vector3_min(struct vector3 a, struct vector3 b) {
-  return (struct vector3){
+static inline struct vec3 vec3_min(struct vec3 a, struct vec3 b) {
+  return (struct vec3){
       .x = a.x <= b.x ? a.x : b.x,
       .y = a.y <= b.y ? a.y : b.y,
       .z = a.z <= b.z ? a.z : b.z,
   };
 }
 
-static inline struct vector3 vector3_max(struct vector3 a, struct vector3 b) {
-  return (struct vector3){
+static inline struct vec3 vec3_max(struct vec3 a, struct vec3 b) {
+  return (struct vec3){
       .x = a.x >= b.x ? a.x : b.x,
       .y = a.y >= b.y ? a.y : b.y,
       .z = a.z >= b.z ? a.z : b.z,
   };
 }
 
-static inline struct vector3 vector3_noise(unsigned int seed, float range) {
+static inline struct vec3 vec3_noise(unsigned int seed, float range) {
   float d, x, y, z;
   int i = 0;
   do {
@@ -499,21 +499,21 @@ static inline struct vector3 vector3_noise(unsigned int seed, float range) {
     d = x * x + y * y + z * z;
     i++;
   } while (d > 1.0);
-  return vector3_scaled((struct vector3){x, y, z}, range);
+  return vec3_scaled((struct vec3){x, y, z}, range);
 }
 
-static inline int vector3_equal(struct vector3 a, struct vector3 b) {
+static inline int vec3_equal(struct vec3 a, struct vec3 b) {
   return fabs(a.x - b.x) <= MATHF_FLOAT_EPSILON &&
          fabs(a.y - b.y) <= MATHF_FLOAT_EPSILON &&
          fabs(a.z - b.z) <= MATHF_FLOAT_EPSILON;
 }
 
-static inline float vector3_angle(struct vector3 v1, struct vector3 v2) {
-  float dot = vector3_dot(v1, v2);
-  float mag1 = vector3_magnitude(v1);
-  float mag2 = vector3_magnitude(v2);
+static inline float vec3_angle(struct vec3 v1, struct vec3 v2) {
+  float dot = vec3_dot(v1, v2);
+  float mag1 = vec3_magnitude(v1);
+  float mag2 = vec3_magnitude(v2);
 
-  // Handle potential division by zero if a vector has zero magnitude
+  // Handle potential division by zero if a vec has zero magnitude
   if (mag1 == 0 || mag2 == 0) {
     return 0.0;
   }
@@ -525,7 +525,7 @@ static inline float vector3_angle(struct vector3 v1, struct vector3 v2) {
 }
 
 static inline struct quaternion quat_from_angle_axis(float angle,
-                                                     struct vector3 axis) {
+                                                     struct vec3 axis) {
   struct quaternion ret;
   float s = sinf(angle / 2);
   ret.x = axis.x * s;
@@ -549,14 +549,14 @@ static inline struct quaternion quat_conjugate(struct quaternion q) {
   return (struct quaternion){-q.x, -q.y, -q.z, q.w};
 }
 
-static inline struct vector3 vector3_rotate(struct vector3 v,
+static inline struct vec3 vec3_rotate(struct vec3 v,
                                             struct quaternion q) {
   struct quaternion ret = (struct quaternion){v.x, v.y, v.z, 0.0};
   ret = quat_multiply(quat_multiply(q, ret), quat_conjugate(q));
-  return (struct vector3){ret.x, ret.y, ret.z};
+  return (struct vec3){ret.x, ret.y, ret.z};
 }
 
-static inline struct quaternion quat_from_euler(struct vector3 euler_angles) {
+static inline struct quaternion quat_from_euler(struct vec3 euler_angles) {
   struct quaternion q;
 
   float cos_roll = cosf(euler_angles.x * 0.5f),
@@ -575,7 +575,7 @@ static inline struct quaternion quat_from_euler(struct vector3 euler_angles) {
 }
 
 static inline struct quaternion quat_rotate_euler(struct quaternion q,
-                                                  struct vector3 euler_angles) {
+                                                  struct vec3 euler_angles) {
   return quat_multiply(q, quat_from_euler(euler_angles));
 }
 

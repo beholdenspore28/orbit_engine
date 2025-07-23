@@ -20,9 +20,9 @@ void main() {
   vec3 blend_weight = pow(abs(normalize(fs_in.normal)), vec3(blend_sharpness));
   blend_weight /= dot(blend_weight, vec3(1));
 
-  vec3 color = fs_in.normal * 0.5;
-  // vec3 color = colorX * blend_weight.x + colorY * blend_weight.y +
-    // colorZ * blend_weight.z;
+  // vec3 color = fs_in.normal * 0.5;
+  vec3 color = colorX * blend_weight.x + colorY * blend_weight.y +
+    colorZ * blend_weight.z;
 
   FragColor = vec4(color, 1.0);
 }

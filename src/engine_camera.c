@@ -4,9 +4,9 @@ struct camera camera_alloc(void) {
   return (struct camera){
       .transform =
           (struct transform){
-              .position = (struct vector3){0, 0, -3},
+              .position = (struct vec3){0, 0, -3},
               .rotation = (struct quaternion){0, 0, 0, 1},
-              .scale = (vector3){1, 1, 1},
+              .scale = (vec3){1, 1, 1},
           },
       .matrix = calloc(16, sizeof(GLfloat)),
   };
@@ -22,8 +22,8 @@ void camera_update(struct camera *camera) {
                          1000);
   // mat4_orthographic(projection, -9, 9, -16, 16, 0.1, 75);
 
-  vector3 offset =
-      vector3_rotate((vector3){0, 0, -1}, camera->transform.rotation);
+  vec3 offset =
+      vec3_rotate((vec3){0, 0, -1}, camera->transform.rotation);
 
   GLfloat translation_matrix[16];
   mathf_mat4_identity(translation_matrix);

@@ -60,8 +60,8 @@ struct mesh {
 };
 
 struct mesh mesh_planet_alloc(const unsigned int subdivisions,
-                              const struct vector3 noise_scale,
-                              const struct vector3 noise_offset,
+                              const struct vec3 noise_scale,
+                              const struct vec3 noise_offset,
                               const float amplitude);
 
 struct camera {
@@ -99,11 +99,11 @@ enum {
 
 bool engine_key_get(int keycode);
 
-typedef struct vector2 vector2;
-typedef struct vector3 vector3;
+typedef struct vec2 vec2;
+typedef struct vec3 vec3;
 
-DECLARE_LIST(vector2)
-DECLARE_LIST(vector3)
+DECLARE_LIST(vec2)
+DECLARE_LIST(vec3)
 DECLARE_LIST(GLuint)
 
 #endif // ENGINE_H

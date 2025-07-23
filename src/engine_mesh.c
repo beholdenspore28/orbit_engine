@@ -1,27 +1,27 @@
 #include "engine.h"
 
 struct mesh mesh_planet_alloc(const unsigned int subdivisions,
-                              const struct vector3 noise_scale,
-                              const struct vector3 noise_offset,
+                              const struct vec3 noise_scale,
+                              const struct vec3 noise_offset,
                               const float amplitude) {
 
   list_GLuint indices_initial = NULL;
-  list_vector3 vertices_initial = NULL;
-  list_vector3 normals_initial = NULL;
+  list_vec3 vertices_initial = NULL;
+  list_vec3 normals_initial = NULL;
 
   { // create a baseline icosahedron.
     const GLfloat t = (1.0 + sqrt(5.0)) / 2.0;
 
     enum { vertices_count = 12 };
-    struct vector3 vertices[vertices_count] = {
-        (struct vector3){-1, t, 0},  (struct vector3){1, t, 0},
-        (struct vector3){-1, -t, 0}, (struct vector3){1, -t, 0},
+    struct vec3 vertices[vertices_count] = {
+        (struct vec3){-1, t, 0},  (struct vec3){1, t, 0},
+        (struct vec3){-1, -t, 0}, (struct vec3){1, -t, 0},
 
-        (struct vector3){0, -1, t},  (struct vector3){0, 1, t},
-        (struct vector3){0, -1, -t}, (struct vector3){0, 1, -t},
+        (struct vec3){0, -1, t},  (struct vec3){0, 1, t},
+        (struct vec3){0, -1, -t}, (struct vec3){0, 1, -t},
 
-        (struct vector3){t, 0, -1},  (struct vector3){t, 0, 1},
-        (struct vector3){-t, 0, -1}, (struct vector3){-t, 0, 1},
+        (struct vec3){t, 0, -1},  (struct vec3){t, 0, 1},
+        (struct vec3){-t, 0, -1}, (struct vec3){-t, 0, 1},
     };
 
     enum { indices_count = 60 };
@@ -32,8 +32,8 @@ struct mesh mesh_planet_alloc(const unsigned int subdivisions,
     };
 
     indices_initial = list_GLuint_alloc_from_array(indices, indices_count);
-    vertices_initial = list_vector3_alloc_from_array(vertices, vertices_count);
-    normals_initial = list_vector3_alloc_from_array(vertices, vertices_count);
+    vertices_initial = list_vec3_alloc_from_array(vertices, vertices_count);
+    normals_initial = list_vec3_alloc_from_array(vertices, vertices_count);
   }
 
   // *===============================================*
@@ -68,28 +68,28 @@ struct mesh mesh_planet_alloc(const unsigned int subdivisions,
       const unsigned int i3 = indices_initial[tri + 2];
 
       { // get vertices in this triangle
-        const struct vector3 v1 = vertices_initial[i1];
-        const struct vector3 v2 = vertices_initial[i2];
-        const struct vector3 v3 = vertices_initial[i3];
+        const struct vec3 v1 = vertices_initial[i1];
+        const struct vec3 v2 = vertices_initial[i2];
+        const struct vec3 v3 = vertices_initial[i3];
 
         // create middle vertices
-        const struct vector3 m1 = vector3_lerp(v1, v2, 0.5);
-        const struct vector3 m2 = vector3_lerp(v2, v3, 0.5);
-        const struct vector3 m3 = vector3_lerp(v3, v1, 0.5);
+        const struct vec3 m1 = vec3_lerp(v1, v2, 0.5);
+        const struct vec3 m2 = vec3_lerp(v2, v3, 0.5);
+        const struct vec3 m3 = vec3_lerp(v3, v1, 0.5);
 
-        list_vector3_add(&vertices_initial, m1);
-        list_vector3_add(&vertices_initial, m2);
-        list_vector3_add(&vertices_initial, m3);
+        list_vec3_add(&vertices_initial, m1);
+        list_vec3_add(&vertices_initial, m2);
+        list_vec3_add(&vertices_initial, m3);
 
-        list_vector3_add(&normals_initial, m1);
-        list_vector3_add(&normals_initial, m2);
-        list_vector3_add(&normals_initial, m3);
+        list_vec3_add(&normals_initial, m1);
+        list_vec3_add(&normals_initial, m2);
+        list_vec3_add(&normals_initial, m3);
       }
 
       { // get new indices
-        const unsigned int i4 = list_vector3_count(vertices_initial) - 3;
-        const unsigned int i5 = list_vector3_count(vertices_initial) - 2;
-        const unsigned int i6 = list_vector3_count(vertices_initial) - 1;
+        const unsigned int i4 = list_vec3_count(vertices_initial) - 3;
+        const unsigned int i5 = list_vec3_count(vertices_initial) - 2;
+        const unsigned int i6 = list_vec3_count(vertices_initial) - 1;
 
         list_GLuint_add(&indices_subdivided, i4);
         list_GLuint_add(&indices_subdivided, i5);
@@ -114,26 +114,26 @@ struct mesh mesh_planet_alloc(const unsigned int subdivisions,
 
 #if 1
   // normalize all points after subdividing
-  for (unsigned int i = 0; i < list_vector3_count(vertices_initial); i++) {
-    vector3_normalize(&vertices_initial[i]);
+  for (unsigned int i = 0; i < list_vec3_count(vertices_initial); i++) {
+    vec3_normalize(&vertices_initial[i]);
     float noise = mathf_noise3_fbm(
         vertices_initial[i].x * noise_scale.x + noise_offset.x,
         vertices_initial[i].y * noise_scale.y + noise_offset.y,
         vertices_initial[i].z * noise_scale.z + noise_offset.z);
-    vector3_add(&vertices_initial[i],
-                vector3_scaled(vertices_initial[i], noise * amplitude));
+    vec3_add(&vertices_initial[i],
+                vec3_scaled(vertices_initial[i], noise * amplitude));
   }
 #endif
 
 #if 1 // calculate normals
   for (unsigned int i = 0; i < list_GLuint_count(indices_initial); i += 3) {
-    const struct vector3 v1 = vertices_initial[indices_initial[i]];
-    const struct vector3 v2 = vertices_initial[indices_initial[i + 1]];
-    const struct vector3 v3 = vertices_initial[indices_initial[i + 2]];
-    const struct vector3 edge1 = vector3_subbed(v2, v1);
-    const struct vector3 edge2 = vector3_subbed(v3, v1);
-    const struct vector3 face_normal =
-        vector3_normalized(vector3_cross(edge1, edge2));
+    const struct vec3 v1 = vertices_initial[indices_initial[i]];
+    const struct vec3 v2 = vertices_initial[indices_initial[i + 1]];
+    const struct vec3 v3 = vertices_initial[indices_initial[i + 2]];
+    const struct vec3 edge1 = vec3_subbed(v2, v1);
+    const struct vec3 edge2 = vec3_subbed(v3, v1);
+    const struct vec3 face_normal =
+        vec3_normalized(vec3_cross(edge1, edge2));
     normals_initial[indices_initial[i]] = face_normal;
     normals_initial[indices_initial[i + 1]] = face_normal;
     normals_initial[indices_initial[i + 2]] = face_normal;
@@ -150,7 +150,7 @@ struct mesh mesh_planet_alloc(const unsigned int subdivisions,
   // positions
   glBindBuffer(GL_ARRAY_BUFFER, VBOs[0]);
   glBufferData(GL_ARRAY_BUFFER,
-               list_vector3_count(vertices_initial) * sizeof(*vertices_initial),
+               list_vec3_count(vertices_initial) * sizeof(*vertices_initial),
                vertices_initial, GL_STATIC_DRAW);
 
   glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void *)0);
@@ -166,7 +166,7 @@ struct mesh mesh_planet_alloc(const unsigned int subdivisions,
   // normals
   glBindBuffer(GL_ARRAY_BUFFER, VBOs[1]);
   glBufferData(GL_ARRAY_BUFFER,
-               list_vector3_count(normals_initial) * sizeof(*normals_initial),
+               list_vec3_count(normals_initial) * sizeof(*normals_initial),
                normals_initial, GL_STATIC_DRAW);
 
   glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, (void *)0);
@@ -178,12 +178,12 @@ struct mesh mesh_planet_alloc(const unsigned int subdivisions,
   mesh.VAO = VAO;
   mesh.VBOs = VBOs;
   mesh.EBO = EBO;
-  mesh.vertices_count = list_vector3_count(vertices_initial);
+  mesh.vertices_count = list_vec3_count(vertices_initial);
   mesh.indices_count = list_GLuint_count(indices_initial);
 
   list_GLuint_free(indices_initial);
-  list_vector3_free(vertices_initial);
-  list_vector3_free(normals_initial);
+  list_vec3_free(vertices_initial);
+  list_vec3_free(normals_initial);
 
   return mesh;
 }

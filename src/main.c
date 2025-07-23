@@ -1,8 +1,8 @@
 #include "engine.h"
 #include <time.h>
 
-DEFINE_LIST(vector2)
-DEFINE_LIST(vector3)
+DEFINE_LIST(vec2)
+DEFINE_LIST(vec3)
 DEFINE_LIST(GLuint)
 
 static GLuint hello_triangle_shader = 0;
@@ -40,8 +40,8 @@ void engine_time_update(void) {
 }
 
 static struct transform planet_transform = (struct transform){
-    .position = vector3_zero(),
-    .scale = (struct vector3){1, 1, 1},
+    .position = vec3_zero(),
+    .scale = (struct vec3){1, 1, 1},
     .rotation = (struct quaternion){0, 0, 0, 1},
 };
 
@@ -56,8 +56,8 @@ void engine_scene_load(void) {
 
   planet_texture = engine_texture_alloc("res/textures/moon_1.jpeg");
   camera = camera_alloc();
-  planet_mesh = mesh_planet_alloc(7, vector3_one(1.0),
-                                  vector3_zero(), 0.5);
+  planet_mesh = mesh_planet_alloc(7, vec3_one(1.0),
+                                  vec3_zero(), 0.5);
 }
 
 void engine_scene_unload(void) {
@@ -73,25 +73,25 @@ void engine_scene_update(void) {
   lookY *= 0.05;
 
   camera.transform.rotation = quat_rotate_euler(camera.transform.rotation,
-                                                vector3_up(lookY));
+                                                vec3_up(lookY));
 
-  struct vector3 movedir = (struct vector3){
+  struct vec3 movedir = (struct vec3){
       engine_key_get(ENGINE_KEY_D) - engine_key_get(ENGINE_KEY_A),
       engine_key_get(ENGINE_KEY_SPACE) - engine_key_get(ENGINE_KEY_LSHIFT),
       engine_key_get(ENGINE_KEY_W) - engine_key_get(ENGINE_KEY_S),
   };
 
-  vector3_normalize(&movedir);
-  vector3_scale(&movedir, 0.1);
+  vec3_normalize(&movedir);
+  vec3_scale(&movedir, 0.1);
 
   // translate to local directions
-  movedir = vector3_rotate(movedir, camera.transform.rotation);
+  movedir = vec3_rotate(movedir, camera.transform.rotation);
 
-  // engine_log(MATHF_VECTOR3_FORMAT_STRING(movedir));
-  vector3_add(&camera.transform.position, movedir);
+  // engine_log(MATHF_vec3_FORMAT_STRING(movedir));
+  vec3_add(&camera.transform.position, movedir);
   camera_update(&camera);
   planet_transform.rotation = quat_rotate_euler(
-      planet_transform.rotation, vector3_one(0.005));
+      planet_transform.rotation, vec3_one(0.005));
 }
 
 void engine_scene_draw(void) {
