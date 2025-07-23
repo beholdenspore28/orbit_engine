@@ -117,7 +117,7 @@ void engine_stop(void) {
   gladLoaderUnloadGLX();
 }
 
-enum { INPUT_KEYS_MAX = 65506 };
+enum { INPUT_KEYS_MAX = 512 };
 bool input_keys[INPUT_KEYS_MAX] = { false };
 
 bool engine_key_get(int keysym) {
@@ -135,7 +135,7 @@ void engine_update(void) {
     case KeyPress: {
       if (input_keys[xev.xkey.keycode] == 0) {
         input_keys[xev.xkey.keycode] = 1;
-        engine_log("pressed keycode %d", xev.xkey.keycode);
+        // engine_log("pressed keycode %d", xev.xkey.keycode);
       }
     } break;
 
