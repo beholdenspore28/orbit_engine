@@ -3,14 +3,15 @@
 in VS_OUT {
   vec3 position;
   vec3 normal;
+  vec3 normal_local;
   vec3 frag_position;
 } fs_in;
 
 out vec4 FragColor;
 
 uniform sampler2D u_diffuse_map;
-uniform vec3 u_light_position = vec3(1);
-uniform vec3 u_camera_position = vec3(1);
+uniform vec3 u_light_position;
+uniform vec3 u_camera_position;
 
 
 void main() {
@@ -21,10 +22,10 @@ void main() {
 
   float blend_sharpness = 4;
 
-  vec3 blend_weight = pow(abs(normalize(fs_in.normal)), vec3(blend_sharpness));
+  vec3 blend_weight = pow(abs(normalize(fs_in.normal_local)), vec3(blend_sharpness));
   blend_weight /= dot(blend_weight, vec3(1));
 
-  // vec3 color = fs_in.normal * 0.5;
+  // vec3 color = fs_in.normal_local * 0.5;
   vec3 color = colorX * blend_weight.x + colorY * blend_weight.y +
     colorZ * blend_weight.z;
 

@@ -1,10 +1,6 @@
 #include "engine.h"
 #include <time.h>
 
-DEFINE_LIST(vec2)
-DEFINE_LIST(vec3)
-DEFINE_LIST(GLuint)
-
 static struct camera camera = {0};
 
 static vec3 light_position = (vec3){10, 10, 0};
@@ -66,7 +62,7 @@ void engine_scene_load(void) {
 
   planet_texture = engine_texture_alloc("res/textures/moon_1.jpeg");
   camera = camera_alloc();
-  planet_mesh = engine_mesh_planet_alloc(7, vec3_one(1.0), vec3_zero(), 0.5);
+  planet_mesh = engine_mesh_planet_alloc(8, vec3_one(1.0), vec3_zero(), 3);
 
   quad_mesh = engine_mesh_quad_alloc();
 }
