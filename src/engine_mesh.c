@@ -1,6 +1,63 @@
 #include "engine.h"
 
-struct mesh mesh_planet_alloc(const unsigned int subdivisions,
+const vec3 engine_mesh_quad_vertices[6] = {
+  (vec3){0.5, -0.5, 0.0},
+  (vec3){0.5, 0.5, 0.0},
+  (vec3){-0.5, 0.5, 0.0},
+
+  (vec3){-0.5, 0.5, 0.0},
+  (vec3){-0.5, -0.5, 0.0},
+  (vec3){0.5, -0.5, 0.0},
+};
+
+const vec3 engine_mesh_quad_normals[6] = {
+  vec3_back(1.0),
+  vec3_back(1.0),
+  vec3_back(1.0),
+  vec3_back(1.0),
+  vec3_back(1.0),
+  vec3_back(1.0),
+};
+
+struct mesh engine_mesh_quad_alloc(void) {
+  GLuint VAO;
+  glGenVertexArrays(1, &VAO);
+  glBindVertexArray(VAO);
+
+  GLuint *VBOs = calloc(2, sizeof(*VBOs));
+  glGenBuffers(4, VBOs);
+
+  // positions
+  glBindBuffer(GL_ARRAY_BUFFER, VBOs[0]);
+  glBufferData(GL_ARRAY_BUFFER,
+               6 * sizeof(*engine_mesh_quad_vertices),
+               engine_mesh_quad_vertices, GL_STATIC_DRAW);
+
+  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void *)0);
+  glEnableVertexAttribArray(0);
+
+  // normals
+  glBindBuffer(GL_ARRAY_BUFFER, VBOs[1]);
+  glBufferData(GL_ARRAY_BUFFER,
+               6 * sizeof(*engine_mesh_quad_normals),
+               engine_mesh_quad_normals, GL_STATIC_DRAW);
+
+  glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, (void *)0);
+  glEnableVertexAttribArray(1);
+
+  glBindVertexArray(0);
+
+  struct mesh mesh = (struct mesh) {0};
+
+  mesh.VAO = VAO;
+  mesh.VBOs = VBOs;
+  mesh.vertices_count = 6;
+  mesh.use_indexed_draw = false;
+
+  return mesh;
+}
+
+struct mesh engine_mesh_planet_alloc(const unsigned int subdivisions,
                               const struct vec3 noise_scale,
                               const struct vec3 noise_offset,
                               const float amplitude) {
@@ -180,6 +237,7 @@ struct mesh mesh_planet_alloc(const unsigned int subdivisions,
   mesh.EBO = EBO;
   mesh.vertices_count = list_vec3_count(vertices_initial);
   mesh.indices_count = list_GLuint_count(indices_initial);
+  mesh.use_indexed_draw = true;
 
   list_GLuint_free(indices_initial);
   list_vec3_free(vertices_initial);

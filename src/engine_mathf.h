@@ -15,40 +15,40 @@ struct vec2 {
   float x, y;
 };
 
-#define vec2_one(magnitude) vec2_scaled((struct vec2){1, 1}, magnitude)
+#define vec2_one(magnitude) (struct vec2){1, 1}
 #define vec2_zero(magnitude) (struct vec2){0,0,0}
-#define vec2_up(magnitude) vec2_scaled((struct vec2){0, 1}, magnitude)
-#define vec2_down(magnitude) vec2_scaled((struct vec2){0, -1}, magnitude)
-#define vec2_left(magnitude) vec2_scaled((struct vec2){-1, 0}, magnitude)
-#define vec2_right(magnitude) vec2_scaled((struct vec2){1, 0}, magnitude)
+#define vec2_up(magnitude) (struct vec2){0, 1}
+#define vec2_down(magnitude) (struct vec2){0, -1}
+#define vec2_left(magnitude) (struct vec2){-1, 0}
+#define vec2_right(magnitude) (struct vec2){1, 0}
 
 struct vec3 {
   float x, y, z;
 };
 
-#define vec3_one(magnitude) vec3_scaled((struct vec3){1, 1, 1}, magnitude)
+#define vec3_one(magnitude) (struct vec3){magnitude, magnitude, magnitude}
 #define vec3_zero(magnitude) (struct vec3){0,0,0}
-#define vec3_up(magnitude) vec3_scaled((struct vec3){0, 1, 0}, magnitude)
-#define vec3_down(magnitude) vec3_scaled((struct vec3){0, -1, 0}, magnitude)
-#define vec3_left(magnitude) vec3_scaled((struct vec3){-1, 0, 0}, magnitude)
-#define vec3_right(magnitude) vec3_scaled((struct vec3){1, 0, 0}, magnitude)
-#define vec3_forward(magnitude) vec3_scaled((struct vec3){0, 0, 1}, magnitude)
-#define vec3_back(magnitude) vec3_scaled((struct vec3){0, 0, -1}, magnitude)
+#define vec3_up(magnitude) (struct vec3){0, magnitude, 0}
+#define vec3_down(magnitude) (struct vec3){0, -magnitude, 0}
+#define vec3_left(magnitude) (struct vec3){-magnitude, 0, 0}
+#define vec3_right(magnitude) (struct vec3){magnitude, 0, 0}
+#define vec3_forward(magnitude) (struct vec3){0, 0, magnitude}
+#define vec3_back(magnitude) (struct vec3){0, 0, -magnitude}
 
 struct vec4 {
   float x, y, z, w;
 };
 
-#define vec4_one(magnitude) vec4_scaled((struct vec4){1, 1, 1}, magnitude)
+#define vec4_one(magnitude) (struct vec4){magnitude, magnitude, magnitude}
 #define vec4_zero(magnitude) (struct vec4){0,0,0}
-#define vec4_up(magnitude) vec4_scaled((struct vec4){0, 1, 0}, magnitude)
-#define vec4_down(magnitude) vec4_scaled((struct vec4){0, -1, 0}, magnitude)
-#define vec4_left(magnitude) vec4_scaled((struct vec4){-1, 0, 0}, magnitude)
-#define vec4_right(magnitude) vec4_scaled((struct vec4){1, 0, 0}, magnitude)
-#define vec4_forward(magnitude) vec4_scaled((struct vec4){0, 0, 1}, magnitude)
-#define vec4_back(magnitude) vec4_scaled((struct vec4){0, 0, -1}, magnitude)
-#define vec4_future(magnitude) vec4_scaled((struct vec4){0, 0, 0, 1}, magnitude)
-#define vec4_past(magnitude) vec4_scaled((struct vec4){0, 0, 0, -1}, magnitude)
+#define vec4_up(magnitude) (struct vec4){0, magnitude, 0}
+#define vec4_down(magnitude) (struct vec4){0, -magnitude, 0}
+#define vec4_left(magnitude) (struct vec4){-magnitude, 0, 0}
+#define vec4_right(magnitude) (struct vec4){magnitude, 0, 0}
+#define vec4_forward(magnitude) (struct vec4){0, 0, magnitude}
+#define vec4_back(magnitude) (struct vec4){0, 0, -magnitude}
+#define vec4_future(magnitude) (struct vec4){0, 0, 0, magnitude}
+#define vec4_past(magnitude) (struct vec4){0, 0, 0, -magnitude}
 
 struct transform {
   struct vec3 position;

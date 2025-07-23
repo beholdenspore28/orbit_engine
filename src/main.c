@@ -5,10 +5,25 @@ DEFINE_LIST(vec2)
 DEFINE_LIST(vec3)
 DEFINE_LIST(GLuint)
 
-static GLuint planet_shader = 0;
 static struct camera camera = {0};
+
+static GLuint planet_shader = 0;
 static struct mesh planet_mesh = {0};
 static GLuint planet_texture = 0;
+
+static struct transform planet_transform = (struct transform){
+  .position = (struct vec3) {1,0,0},
+    .scale = (struct vec3){1, 1, 1},
+    .rotation = (struct quat){0, 0, 0, 1},
+};
+
+static struct mesh quad_mesh = {0};
+
+static struct transform quad_transform = {
+  .position = (struct vec3) {-1,0,0},
+  .rotation = (struct quat) {0,0,0,1},
+  .scale    = (struct vec3) {1,1,1},
+};
 
 struct engine_time {
   double FPS, delta, last, current;
@@ -39,12 +54,6 @@ void engine_time_update(void) {
 #endif
 }
 
-static struct transform planet_transform = (struct transform){
-    .position = vec3_zero(),
-    .scale = (struct vec3){1, 1, 1},
-    .rotation = (struct quat){0, 0, 0, 1},
-};
-
 void engine_scene_load(void) {
   glEnable(GL_DEPTH_TEST);
   glEnable(GL_CULL_FACE);
@@ -56,15 +65,49 @@ void engine_scene_load(void) {
 
   planet_texture = engine_texture_alloc("res/textures/moon_1.jpeg");
   camera = camera_alloc();
-  planet_mesh = mesh_planet_alloc(7, vec3_one(1.0),
+  planet_mesh = engine_mesh_planet_alloc(7, vec3_one(1.0),
                                   vec3_zero(), 0.5);
+
+  quad_mesh = engine_mesh_quad_alloc();
 }
 
 void engine_scene_unload(void) {
-  glDeleteVertexArrays(1, &planet_mesh.VAO);
+  glDeleteBuffers(1, &quad_mesh.VBOs[0]);
+  glDeleteVertexArrays(1, &quad_mesh.VAO);
+
   glDeleteBuffers(1, &planet_mesh.VBOs[0]);
   glDeleteBuffers(1, &planet_mesh.EBO);
+  glDeleteVertexArrays(1, &planet_mesh.VAO);
+
   glDeleteProgram(planet_shader);
+}
+
+void engine_draw(struct mesh mesh, struct transform transform, GLuint shader, GLuint texture) {
+  {
+    GLint camera_matrix_location =
+        glGetUniformLocation(shader, "u_camera_matrix");
+    glUniformMatrix4fv(camera_matrix_location, 1, GL_FALSE, camera.matrix);
+  }
+
+  {
+    GLfloat transform_matrix[16];
+    mathf_transform_matrix(transform_matrix, &transform);
+
+    GLint model_matrix_location =
+        glGetUniformLocation(shader, "u_transform_matrix");
+    glUniformMatrix4fv(model_matrix_location, 1, GL_FALSE, transform_matrix);
+  }
+
+  glActiveTexture(GL_TEXTURE0);
+  glBindTexture(GL_TEXTURE_2D, texture);
+  glUniform1i(glGetUniformLocation(shader, "u_diffuse_map"), 0);
+
+  glBindVertexArray(mesh.VAO);
+  if (mesh.use_indexed_draw) {
+    glDrawElements(GL_TRIANGLES, mesh.indices_count, GL_UNSIGNED_INT, 0);
+  } else {
+    glDrawArrays(GL_TRIANGLES, 0, 6);
+  }
 }
 
 void engine_scene_update(void) {
@@ -93,36 +136,22 @@ void engine_scene_update(void) {
 #endif
 
   camera_update(&camera);
+
   planet_transform.rotation = quat_rotate_euler(
       planet_transform.rotation, vec3_one(0.005));
+
+  quad_transform.rotation = quat_rotate_euler(
+      quad_transform.rotation, vec3_up(0.005));
 }
 
 void engine_scene_draw(void) {
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
   glUseProgram(planet_shader);
   // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
-  {
-    GLint camera_matrix_location =
-        glGetUniformLocation(planet_shader, "u_camera_matrix");
-    glUniformMatrix4fv(camera_matrix_location, 1, GL_FALSE, camera.matrix);
-  }
-
-  {
-    GLfloat transform_matrix[16];
-    mathf_transform_matrix(transform_matrix, &planet_transform);
-
-    GLint model_matrix_location =
-        glGetUniformLocation(planet_shader, "u_transform_matrix");
-    glUniformMatrix4fv(model_matrix_location, 1, GL_FALSE, transform_matrix);
-  }
-
-  glActiveTexture(GL_TEXTURE0);
-  glBindTexture(GL_TEXTURE_2D, planet_texture);
-  glUniform1i(glGetUniformLocation(planet_shader, "u_diffuse_map"), 0);
-
-  glBindVertexArray(planet_mesh.VAO);
-  glDrawElements(GL_TRIANGLES, planet_mesh.indices_count, GL_UNSIGNED_INT, 0);
+  engine_draw(planet_mesh, planet_transform, planet_shader, planet_texture);
+  engine_draw(quad_mesh, quad_transform, planet_shader, planet_texture);
 }
 
 int main() {

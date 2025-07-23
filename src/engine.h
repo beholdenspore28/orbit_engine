@@ -58,9 +58,12 @@ struct mesh {
   GLuint EBO;
   GLuint vertices_count;
   GLuint indices_count;
+  bool use_indexed_draw;
 };
 
-struct mesh mesh_planet_alloc(const unsigned int subdivisions,
+struct mesh engine_mesh_quad_alloc(void);
+
+struct mesh engine_mesh_planet_alloc(const unsigned int subdivisions,
                               const struct vec3 noise_scale,
                               const struct vec3 noise_offset,
                               const float amplitude);
