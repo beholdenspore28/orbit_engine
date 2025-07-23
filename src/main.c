@@ -7,12 +7,14 @@ DEFINE_LIST(GLuint)
 
 static struct camera camera = {0};
 
+static vec3 light_position = (vec3){10, 10, 0};
+
 static GLuint planet_shader = 0;
 static struct mesh planet_mesh = {0};
 static GLuint planet_texture = 0;
 
 static struct transform planet_transform = (struct transform){
-  .position = (struct vec3) {1,0,0},
+    .position = (struct vec3){1, 0, 0},
     .scale = (struct vec3){1, 1, 1},
     .rotation = (struct quat){0, 0, 0, 1},
 };
@@ -20,9 +22,9 @@ static struct transform planet_transform = (struct transform){
 static struct mesh quad_mesh = {0};
 
 static struct transform quad_transform = {
-  .position = (struct vec3) {-1,0,0},
-  .rotation = (struct quat) {0,0,0,1},
-  .scale    = (struct vec3) {1,1,1},
+    .position = (struct vec3){-1, 0, 0},
+    .rotation = (struct quat){0, 0, 0, 1},
+    .scale = (struct vec3){1, 1, 1},
 };
 
 struct engine_time {
@@ -59,14 +61,12 @@ void engine_scene_load(void) {
   glEnable(GL_CULL_FACE);
   glClearColor(0, 0, 0, 1);
 
-  planet_shader =
-      engine_shader_create("res/shaders/planet_vertex.glsl",
-                           "res/shaders/planet_fragment.glsl");
+  planet_shader = engine_shader_create("res/shaders/planet_vertex.glsl",
+                                       "res/shaders/planet_fragment.glsl");
 
   planet_texture = engine_texture_alloc("res/textures/moon_1.jpeg");
   camera = camera_alloc();
-  planet_mesh = engine_mesh_planet_alloc(7, vec3_one(1.0),
-                                  vec3_zero(), 0.5);
+  planet_mesh = engine_mesh_planet_alloc(7, vec3_one(1.0), vec3_zero(), 0.5);
 
   quad_mesh = engine_mesh_quad_alloc();
 }
@@ -82,7 +82,8 @@ void engine_scene_unload(void) {
   glDeleteProgram(planet_shader);
 }
 
-void engine_draw(struct mesh mesh, struct transform transform, GLuint shader, GLuint texture) {
+void engine_draw(struct mesh mesh, struct transform transform, GLuint shader,
+                 GLuint texture) {
   {
     GLint camera_matrix_location =
         glGetUniformLocation(shader, "u_camera_matrix");
@@ -102,6 +103,13 @@ void engine_draw(struct mesh mesh, struct transform transform, GLuint shader, GL
   glBindTexture(GL_TEXTURE_2D, texture);
   glUniform1i(glGetUniformLocation(shader, "u_diffuse_map"), 0);
 
+  glUniform3f(glGetUniformLocation(shader, "u_light_position"),
+              light_position.x, light_position.y, light_position.z);
+
+  glUniform3f(glGetUniformLocation(shader, "u_camera_position"),
+              camera.transform.position.x, camera.transform.position.y,
+              camera.transform.position.z);
+
   glBindVertexArray(mesh.VAO);
   if (mesh.use_indexed_draw) {
     glDrawElements(GL_TRIANGLES, mesh.indices_count, GL_UNSIGNED_INT, 0);
@@ -116,8 +124,8 @@ void engine_scene_update(void) {
       engine_key_get(ENGINE_KEY_PERIOD) - engine_key_get(ENGINE_KEY_COMMA);
   lookY *= 0.05;
 
-  camera.transform.rotation = quat_rotate_euler(camera.transform.rotation,
-                                                vec3_up(lookY));
+  camera.transform.rotation =
+      quat_rotate_euler(camera.transform.rotation, vec3_up(lookY));
 
   struct vec3 movedir = (struct vec3){
       engine_key_get(ENGINE_KEY_D) - engine_key_get(ENGINE_KEY_A),
@@ -137,11 +145,11 @@ void engine_scene_update(void) {
 
   camera_update(&camera);
 
-  planet_transform.rotation = quat_rotate_euler(
-      planet_transform.rotation, vec3_one(0.005));
+  planet_transform.rotation =
+      quat_rotate_euler(planet_transform.rotation, vec3_one(engine_time_get()->delta * 0.1));
 
-  quad_transform.rotation = quat_rotate_euler(
-      quad_transform.rotation, vec3_up(0.005));
+  quad_transform.rotation =
+      quat_rotate_euler(quad_transform.rotation, vec3_up(0.005));
 }
 
 void engine_scene_draw(void) {

@@ -118,10 +118,11 @@ void engine_stop(void) {
 }
 
 enum { INPUT_KEYS_MAX = 512 };
-bool input_keys[INPUT_KEYS_MAX] = { false };
+bool input_keys[INPUT_KEYS_MAX] = {false};
 
 bool engine_key_get(int keysym) {
-  const KeyCode keycode = XKeysymToKeycode(engine_window_instance.display, keysym);
+  const KeyCode keycode =
+      XKeysymToKeycode(engine_window_instance.display, keysym);
   return input_keys[keycode];
 }
 

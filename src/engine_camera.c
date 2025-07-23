@@ -22,8 +22,7 @@ void camera_update(struct camera *camera) {
                          1000);
   // mat4_orthographic(projection, -9, 9, -16, 16, 0.1, 75);
 
-  vec3 offset =
-      vec3_rotate((vec3){0, 0, -1}, camera->transform.rotation);
+  vec3 offset = vec3_rotate((vec3){0, 0, -1}, camera->transform.rotation);
 
   GLfloat translation_matrix[16];
   mathf_mat4_identity(translation_matrix);

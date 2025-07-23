@@ -26,9 +26,9 @@ bool engine_is_running(void);
 
 #include "glad/glx.h"
 #include <X11/XKBlib.h>
-#include <X11/keysym.h>
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
+#include <X11/keysym.h>
 
 struct engine_window;
 extern struct engine_window engine_window_instance;
@@ -64,9 +64,9 @@ struct mesh {
 struct mesh engine_mesh_quad_alloc(void);
 
 struct mesh engine_mesh_planet_alloc(const unsigned int subdivisions,
-                              const struct vec3 noise_scale,
-                              const struct vec3 noise_offset,
-                              const float amplitude);
+                                     const struct vec3 noise_scale,
+                                     const struct vec3 noise_offset,
+                                     const float amplitude);
 
 struct camera {
   struct transform transform;
@@ -207,20 +207,20 @@ enum {
   ENGINE_KEY_NUMPAD_ENTER = XK_KP_Enter,
 
   // Additional keys
-  ENGINE_KEY_APPLICATION = XK_Menu, // Application key
-  ENGINE_KEY_CONTEXT_MENU = XK_Menu, // Context menu key
-  ENGINE_KEY_HELP = XK_Help, // Help key
-                             // Miscellaneous keys
-  ENGINE_KEY_NUM_LOCK = XK_Num_Lock, // Num Lock
-  ENGINE_KEY_CAPS_LOCK = XK_Caps_Lock, // Caps Lock
-  ENGINE_KEY_LEFT_CONTROL = XK_Control_L, // Left Control
+  ENGINE_KEY_APPLICATION = XK_Menu,        // Application key
+  ENGINE_KEY_CONTEXT_MENU = XK_Menu,       // Context menu key
+  ENGINE_KEY_HELP = XK_Help,               // Help key
+                                           // Miscellaneous keys
+  ENGINE_KEY_NUM_LOCK = XK_Num_Lock,       // Num Lock
+  ENGINE_KEY_CAPS_LOCK = XK_Caps_Lock,     // Caps Lock
+  ENGINE_KEY_LEFT_CONTROL = XK_Control_L,  // Left Control
   ENGINE_KEY_RIGHT_CONTROL = XK_Control_R, // Right Control
-  ENGINE_KEY_LEFT_SHIFT = XK_Shift_L, // Left Shift
-  ENGINE_KEY_RIGHT_SHIFT = XK_Shift_R, // Right Shift
-  ENGINE_KEY_LEFT_ALT = XK_Alt_L, // Left Alt
-  ENGINE_KEY_RIGHT_ALT = XK_Alt_R, // Right Alt
-  ENGINE_KEY_LEFT_META = XK_Meta_L, // Left Meta
-  ENGINE_KEY_RIGHT_META = XK_Meta_R, // Right Meta
+  ENGINE_KEY_LEFT_SHIFT = XK_Shift_L,      // Left Shift
+  ENGINE_KEY_RIGHT_SHIFT = XK_Shift_R,     // Right Shift
+  ENGINE_KEY_LEFT_ALT = XK_Alt_L,          // Left Alt
+  ENGINE_KEY_RIGHT_ALT = XK_Alt_R,         // Right Alt
+  ENGINE_KEY_LEFT_META = XK_Meta_L,        // Left Meta
+  ENGINE_KEY_RIGHT_META = XK_Meta_R,       // Right Meta
 
   // Function keys (if not already included)
   ENGINE_KEY_F13 = XK_F13,

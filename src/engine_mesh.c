@@ -1,22 +1,14 @@
 #include "engine.h"
 
 const vec3 engine_mesh_quad_vertices[6] = {
-  (vec3){0.5, -0.5, 0.0},
-  (vec3){0.5, 0.5, 0.0},
-  (vec3){-0.5, 0.5, 0.0},
+    (vec3){0.5, -0.5, 0.0}, (vec3){0.5, 0.5, 0.0},   (vec3){-0.5, 0.5, 0.0},
 
-  (vec3){-0.5, 0.5, 0.0},
-  (vec3){-0.5, -0.5, 0.0},
-  (vec3){0.5, -0.5, 0.0},
+    (vec3){-0.5, 0.5, 0.0}, (vec3){-0.5, -0.5, 0.0}, (vec3){0.5, -0.5, 0.0},
 };
 
 const vec3 engine_mesh_quad_normals[6] = {
-  vec3_back(1.0),
-  vec3_back(1.0),
-  vec3_back(1.0),
-  vec3_back(1.0),
-  vec3_back(1.0),
-  vec3_back(1.0),
+    vec3_back(1.0), vec3_back(1.0), vec3_back(1.0),
+    vec3_back(1.0), vec3_back(1.0), vec3_back(1.0),
 };
 
 struct mesh engine_mesh_quad_alloc(void) {
@@ -29,8 +21,7 @@ struct mesh engine_mesh_quad_alloc(void) {
 
   // positions
   glBindBuffer(GL_ARRAY_BUFFER, VBOs[0]);
-  glBufferData(GL_ARRAY_BUFFER,
-               6 * sizeof(*engine_mesh_quad_vertices),
+  glBufferData(GL_ARRAY_BUFFER, 6 * sizeof(*engine_mesh_quad_vertices),
                engine_mesh_quad_vertices, GL_STATIC_DRAW);
 
   glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void *)0);
@@ -38,8 +29,7 @@ struct mesh engine_mesh_quad_alloc(void) {
 
   // normals
   glBindBuffer(GL_ARRAY_BUFFER, VBOs[1]);
-  glBufferData(GL_ARRAY_BUFFER,
-               6 * sizeof(*engine_mesh_quad_normals),
+  glBufferData(GL_ARRAY_BUFFER, 6 * sizeof(*engine_mesh_quad_normals),
                engine_mesh_quad_normals, GL_STATIC_DRAW);
 
   glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, (void *)0);
@@ -47,7 +37,7 @@ struct mesh engine_mesh_quad_alloc(void) {
 
   glBindVertexArray(0);
 
-  struct mesh mesh = (struct mesh) {0};
+  struct mesh mesh = (struct mesh){0};
 
   mesh.VAO = VAO;
   mesh.VBOs = VBOs;
@@ -58,9 +48,9 @@ struct mesh engine_mesh_quad_alloc(void) {
 }
 
 struct mesh engine_mesh_planet_alloc(const unsigned int subdivisions,
-                              const struct vec3 noise_scale,
-                              const struct vec3 noise_offset,
-                              const float amplitude) {
+                                     const struct vec3 noise_scale,
+                                     const struct vec3 noise_offset,
+                                     const float amplitude) {
 
   list_GLuint indices_initial = NULL;
   list_vec3 vertices_initial = NULL;
@@ -178,7 +168,7 @@ struct mesh engine_mesh_planet_alloc(const unsigned int subdivisions,
         vertices_initial[i].y * noise_scale.y + noise_offset.y,
         vertices_initial[i].z * noise_scale.z + noise_offset.z);
     vec3_add(&vertices_initial[i],
-                vec3_scaled(vertices_initial[i], noise * amplitude));
+             vec3_scaled(vertices_initial[i], noise * amplitude));
   }
 #endif
 
@@ -189,8 +179,7 @@ struct mesh engine_mesh_planet_alloc(const unsigned int subdivisions,
     const struct vec3 v3 = vertices_initial[indices_initial[i + 2]];
     const struct vec3 edge1 = vec3_subbed(v2, v1);
     const struct vec3 edge2 = vec3_subbed(v3, v1);
-    const struct vec3 face_normal =
-        vec3_normalized(vec3_cross(edge1, edge2));
+    const struct vec3 face_normal = vec3_normalized(vec3_cross(edge1, edge2));
     normals_initial[indices_initial[i]] = face_normal;
     normals_initial[indices_initial[i + 1]] = face_normal;
     normals_initial[indices_initial[i + 2]] = face_normal;
