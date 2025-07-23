@@ -42,7 +42,7 @@ void engine_time_update(void) {
 static struct transform planet_transform = (struct transform){
     .position = vec3_zero(),
     .scale = (struct vec3){1, 1, 1},
-    .rotation = (struct quaternion){0, 0, 0, 1},
+    .rotation = (struct quat){0, 0, 0, 1},
 };
 
 void engine_scene_load(void) {

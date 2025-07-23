@@ -5,7 +5,7 @@ struct camera camera_alloc(void) {
       .transform =
           (struct transform){
               .position = (struct vec3){0, 0, -3},
-              .rotation = (struct quaternion){0, 0, 0, 1},
+              .rotation = (struct quat){0, 0, 0, 1},
               .scale = (vec3){1, 1, 1},
           },
       .matrix = calloc(16, sizeof(GLfloat)),

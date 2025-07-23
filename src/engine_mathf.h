@@ -7,7 +7,7 @@
 #define MATHF_FLOAT_EPSILON (1e-4)
 #define MATHF_PI (3.14159265358)
 
-struct quaternion {
+struct quat {
   float x, y, z, w;
 };
 
@@ -52,7 +52,7 @@ struct vec4 {
 
 struct transform {
   struct vec3 position;
-  struct quaternion rotation;
+  struct quat rotation;
   struct vec3 scale;
 };
 
@@ -524,9 +524,9 @@ static inline float vec3_angle(struct vec3 v1, struct vec3 v2) {
   return acos(cos_theta); // Returns angle in radians
 }
 
-static inline struct quaternion quat_from_angle_axis(float angle,
+static inline struct quat quat_from_angle_axis(float angle,
                                                      struct vec3 axis) {
-  struct quaternion ret;
+  struct quat ret;
   float s = sinf(angle / 2);
   ret.x = axis.x * s;
   ret.y = axis.y * s;
@@ -535,9 +535,9 @@ static inline struct quaternion quat_from_angle_axis(float angle,
   return ret;
 }
 
-static inline struct quaternion quat_multiply(struct quaternion q1,
-                                              struct quaternion q2) {
-  struct quaternion ret = {0};
+static inline struct quat quat_multiply(struct quat q1,
+                                              struct quat q2) {
+  struct quat ret = {0};
   ret.x = q1.w * q2.x + q1.x * q2.w + q1.y * q2.z - q1.z * q2.y;
   ret.y = q1.w * q2.y - q1.x * q2.z + q1.y * q2.w + q1.z * q2.x;
   ret.z = q1.w * q2.z + q1.x * q2.y - q1.y * q2.x + q1.z * q2.w;
@@ -545,19 +545,19 @@ static inline struct quaternion quat_multiply(struct quaternion q1,
   return ret;
 }
 
-static inline struct quaternion quat_conjugate(struct quaternion q) {
-  return (struct quaternion){-q.x, -q.y, -q.z, q.w};
+static inline struct quat quat_conjugate(struct quat q) {
+  return (struct quat){-q.x, -q.y, -q.z, q.w};
 }
 
 static inline struct vec3 vec3_rotate(struct vec3 v,
-                                            struct quaternion q) {
-  struct quaternion ret = (struct quaternion){v.x, v.y, v.z, 0.0};
+                                            struct quat q) {
+  struct quat ret = (struct quat){v.x, v.y, v.z, 0.0};
   ret = quat_multiply(quat_multiply(q, ret), quat_conjugate(q));
   return (struct vec3){ret.x, ret.y, ret.z};
 }
 
-static inline struct quaternion quat_from_euler(struct vec3 euler_angles) {
-  struct quaternion q;
+static inline struct quat quat_from_euler(struct vec3 euler_angles) {
+  struct quat q;
 
   float cos_roll = cosf(euler_angles.x * 0.5f),
         sin_roll = sinf(euler_angles.x * 0.5f),
@@ -574,12 +574,12 @@ static inline struct quaternion quat_from_euler(struct vec3 euler_angles) {
   return q;
 }
 
-static inline struct quaternion quat_rotate_euler(struct quaternion q,
+static inline struct quat quat_rotate_euler(struct quat q,
                                                   struct vec3 euler_angles) {
   return quat_multiply(q, quat_from_euler(euler_angles));
 }
 
-static inline float *quat_to_mat4(struct quaternion q, float matrix[16]) {
+static inline float *quat_to_mat4(struct quat q, float matrix[16]) {
   float xx = q.x * q.x, xy = q.x * q.y, xz = q.x * q.z, xw = q.x * q.w,
 
         yy = q.y * q.y, yz = q.y * q.z, yw = q.y * q.w,
