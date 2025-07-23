@@ -117,10 +117,13 @@ void engine_stop(void) {
   gladLoaderUnloadGLX();
 }
 
-enum { INPUT_KEYS_MAX = 256 };
-int input_keys[INPUT_KEYS_MAX];
+enum { INPUT_KEYS_MAX = 65506 };
+bool input_keys[INPUT_KEYS_MAX] = { false };
 
-bool engine_key_get(int keycode) { return input_keys[keycode]; }
+bool engine_key_get(int keysym) {
+  const KeyCode keycode = XKeysymToKeycode(engine_window_instance.display, keysym);
+  return input_keys[keycode];
+}
 
 void engine_update(void) {
   glXSwapBuffers(engine_window_instance.display, engine_window_instance.window);
@@ -132,7 +135,7 @@ void engine_update(void) {
     case KeyPress: {
       if (input_keys[xev.xkey.keycode] == 0) {
         input_keys[xev.xkey.keycode] = 1;
-        // engine_log("pressed keycode %d", xev.xkey.keycode);
+        engine_log("pressed keycode %d", xev.xkey.keycode);
       }
     } break;
 

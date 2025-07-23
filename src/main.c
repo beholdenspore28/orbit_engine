@@ -68,17 +68,18 @@ void engine_scene_unload(void) {
 }
 
 void engine_scene_update(void) {
+#if 1
   float lookY =
-      engine_key_get(ENGINE_KEY_PERIOD) - engine_key_get(ENGINE_KEY_COMMA);
+      engine_key_get(XK_period) - engine_key_get(XK_comma);
   lookY *= 0.05;
 
   camera.transform.rotation = quat_rotate_euler(camera.transform.rotation,
                                                 vec3_up(lookY));
 
   struct vec3 movedir = (struct vec3){
-      engine_key_get(ENGINE_KEY_D) - engine_key_get(ENGINE_KEY_A),
-      engine_key_get(ENGINE_KEY_SPACE) - engine_key_get(ENGINE_KEY_LSHIFT),
-      engine_key_get(ENGINE_KEY_W) - engine_key_get(ENGINE_KEY_S),
+      engine_key_get(XK_d) - engine_key_get(XK_a),
+      engine_key_get(XK_space) - engine_key_get(XK_Shift_L),
+      engine_key_get(XK_W) - engine_key_get(XK_S),
   };
 
   vec3_normalize(&movedir);
@@ -89,6 +90,8 @@ void engine_scene_update(void) {
 
   // engine_log(MATHF_vec3_FORMAT_STRING(movedir));
   vec3_add(&camera.transform.position, movedir);
+#endif
+
   camera_update(&camera);
   planet_transform.rotation = quat_rotate_euler(
       planet_transform.rotation, vec3_one(0.005));

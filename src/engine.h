@@ -26,6 +26,7 @@ bool engine_is_running(void);
 
 #include "glad/glx.h"
 #include <X11/XKBlib.h>
+#include <X11/keysym.h>
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 
@@ -84,18 +85,6 @@ void engine_scene_load(void);
 void engine_scene_unload(void);
 void engine_scene_update(void);
 void engine_scene_draw(void);
-
-enum {
-  ENGINE_KEY_W = 25,
-  ENGINE_KEY_S = 39,
-  ENGINE_KEY_A = 38,
-  ENGINE_KEY_D = 40,
-  ENGINE_KEY_SPACE = 65,
-  ENGINE_KEY_LSHIFT = 50,
-  ENGINE_KEY_LEFT_CONTROL = 37,
-  ENGINE_KEY_COMMA = 59,
-  ENGINE_KEY_PERIOD = 60,
-};
 
 bool engine_key_get(int keycode);
 
