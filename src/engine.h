@@ -60,6 +60,8 @@ struct mesh {
 };
 
 struct mesh mesh_planet_alloc(const unsigned int subdivisions,
+                              const struct vector3 noise_scale,
+                              const struct vector3 noise_offset,
                               const float amplitude);
 
 struct camera {

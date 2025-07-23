@@ -27,10 +27,11 @@ void engine_time_update(void) {
     exit(0);
   }
 
-  engine_time_instance.current  = spec.tv_sec + spec.tv_nsec * 1e-9;
-  engine_time_instance.delta    = engine_time_instance.current - engine_time_instance.last;
-  engine_time_instance.last     = engine_time_instance.current;
-  engine_time_instance.FPS      = 1 / engine_time_instance.delta;
+  engine_time_instance.current = spec.tv_sec + spec.tv_nsec * 1e-9;
+  engine_time_instance.delta =
+      engine_time_instance.current - engine_time_instance.last;
+  engine_time_instance.last = engine_time_instance.current;
+  engine_time_instance.FPS = 1 / engine_time_instance.delta;
 
 #if 0
   engine_log("TIME: delta %lf | current %lf", engine_time_instance.delta,
@@ -39,8 +40,8 @@ void engine_time_update(void) {
 }
 
 static struct transform planet_transform = (struct transform){
-    .position = (vector3){0, 0, 0},
-    .scale = (vector3){1, 1, 1},
+    .position = vector3_zero(),
+    .scale = (struct vector3){1, 1, 1},
     .rotation = (struct quaternion){0, 0, 0, 1},
 };
 
@@ -55,7 +56,8 @@ void engine_scene_load(void) {
 
   planet_texture = engine_texture_alloc("res/textures/moon_1.jpeg");
   camera = camera_alloc();
-  planet_mesh = mesh_planet_alloc(6, 1);
+  planet_mesh = mesh_planet_alloc(7, vector3_one(1.0),
+                                  vector3_zero(), 0.5);
 }
 
 void engine_scene_unload(void) {
@@ -70,10 +72,10 @@ void engine_scene_update(void) {
       engine_key_get(ENGINE_KEY_PERIOD) - engine_key_get(ENGINE_KEY_COMMA);
   lookY *= 0.05;
 
-  camera.transform.rotation =
-      quat_rotate_euler(camera.transform.rotation, (vector3){0, lookY, 0});
+  camera.transform.rotation = quat_rotate_euler(camera.transform.rotation,
+                                                vector3_up(lookY));
 
-  vector3 movedir = (vector3){
+  struct vector3 movedir = (struct vector3){
       engine_key_get(ENGINE_KEY_D) - engine_key_get(ENGINE_KEY_A),
       engine_key_get(ENGINE_KEY_SPACE) - engine_key_get(ENGINE_KEY_LSHIFT),
       engine_key_get(ENGINE_KEY_W) - engine_key_get(ENGINE_KEY_S),
@@ -88,14 +90,14 @@ void engine_scene_update(void) {
   // engine_log(MATHF_VECTOR3_FORMAT_STRING(movedir));
   vector3_add(&camera.transform.position, movedir);
   camera_update(&camera);
-  planet_transform.rotation = quat_rotate_euler(planet_transform.rotation,
-                                                (vector3){0.005, 0.005, 0.005});
+  planet_transform.rotation = quat_rotate_euler(
+      planet_transform.rotation, vector3_one(0.005));
 }
 
 void engine_scene_draw(void) {
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   glUseProgram(hello_triangle_shader);
-  //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+  // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
   {
     GLint camera_matrix_location =

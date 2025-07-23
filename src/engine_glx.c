@@ -48,8 +48,9 @@ bool engine_start(void) {
       glXChooseVisual(engine_window_instance.display,
                       engine_window_instance.screen, visual_attributes);
 
-  engine_window_instance.colormap = XCreateColormap(
-      engine_window_instance.display, root, engine_window_instance.visual_info->visual, AllocNone);
+  engine_window_instance.colormap =
+      XCreateColormap(engine_window_instance.display, root,
+                      engine_window_instance.visual_info->visual, AllocNone);
 
   XSetWindowAttributes attributes;
   attributes.event_mask = ExposureMask | KeyPressMask | KeyReleaseMask;
@@ -58,8 +59,9 @@ bool engine_start(void) {
   engine_window_instance.window = XCreateWindow(
       engine_window_instance.display, root, 0, 0,
       engine_window_instance.window_width, engine_window_instance.window_height,
-      0, engine_window_instance.visual_info->depth, InputOutput, engine_window_instance.visual_info->visual,
-      CWColormap | CWEventMask, &attributes);
+      0, engine_window_instance.visual_info->depth, InputOutput,
+      engine_window_instance.visual_info->visual, CWColormap | CWEventMask,
+      &attributes);
 
   XMapWindow(engine_window_instance.display, engine_window_instance.window);
   XStoreName(engine_window_instance.display, engine_window_instance.window,
@@ -70,8 +72,9 @@ bool engine_start(void) {
     return false;
   }
 
-  engine_window_instance.context = glXCreateContext(
-      engine_window_instance.display, engine_window_instance.visual_info, NULL, GL_TRUE);
+  engine_window_instance.context =
+      glXCreateContext(engine_window_instance.display,
+                       engine_window_instance.visual_info, NULL, GL_TRUE);
   glXMakeCurrent(engine_window_instance.display, engine_window_instance.window,
                  engine_window_instance.context);
 

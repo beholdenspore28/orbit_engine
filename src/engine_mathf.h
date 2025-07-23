@@ -15,13 +15,40 @@ struct vector2 {
   float x, y;
 };
 
+#define vector2_one(magnitude) vector2_scaled((struct vector2){1, 1}, magnitude)
+#define vector2_zero(magnitude) (struct vector2){0,0,0}
+#define vector2_up(magnitude) vector2_scaled((struct vector2){0, 1}, magnitude)
+#define vector2_down(magnitude) vector2_scaled((struct vector2){0, -1}, magnitude)
+#define vector2_left(magnitude) vector2_scaled((struct vector2){-1, 0}, magnitude)
+#define vector2_right(magnitude) vector2_scaled((struct vector2){1, 0}, magnitude)
+
 struct vector3 {
   float x, y, z;
 };
 
+#define vector3_one(magnitude) vector3_scaled((struct vector3){1, 1, 1}, magnitude)
+#define vector3_zero(magnitude) (struct vector3){0,0,0}
+#define vector3_up(magnitude) vector3_scaled((struct vector3){0, 1, 0}, magnitude)
+#define vector3_down(magnitude) vector3_scaled((struct vector3){0, -1, 0}, magnitude)
+#define vector3_left(magnitude) vector3_scaled((struct vector3){-1, 0, 0}, magnitude)
+#define vector3_right(magnitude) vector3_scaled((struct vector3){1, 0, 0}, magnitude)
+#define vector3_forward(magnitude) vector3_scaled((struct vector3){0, 0, 1}, magnitude)
+#define vector3_back(magnitude) vector3_scaled((struct vector3){0, 0, -1}, magnitude)
+
 struct vector4 {
   float x, y, z, w;
 };
+
+#define vector4_one(magnitude) vector4_scaled((struct vector4){1, 1, 1}, magnitude)
+#define vector4_zero(magnitude) (struct vector4){0,0,0}
+#define vector4_up(magnitude) vector4_scaled((struct vector4){0, 1, 0}, magnitude)
+#define vector4_down(magnitude) vector4_scaled((struct vector4){0, -1, 0}, magnitude)
+#define vector4_left(magnitude) vector4_scaled((struct vector4){-1, 0, 0}, magnitude)
+#define vector4_right(magnitude) vector4_scaled((struct vector4){1, 0, 0}, magnitude)
+#define vector4_forward(magnitude) vector4_scaled((struct vector4){0, 0, 1}, magnitude)
+#define vector4_back(magnitude) vector4_scaled((struct vector4){0, 0, -1}, magnitude)
+#define vector4_future(magnitude) vector4_scaled((struct vector4){0, 0, 0, 1}, magnitude)
+#define vector4_past(magnitude) vector4_scaled((struct vector4){0, 0, 0, -1}, magnitude)
 
 struct transform {
   struct vector3 position;
