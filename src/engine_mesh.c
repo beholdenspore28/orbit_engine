@@ -167,13 +167,15 @@ struct mesh engine_mesh_planet_alloc(const unsigned int subdivisions,
   }
 
 #if 1
-  // normalize all points after subdividing
   for (unsigned int i = 0; i < list_vec3_count(vertices_initial); i++) {
+
     vec3_normalize(&vertices_initial[i]);
+
     float noise = mathf_noise3_fbm(
         vertices_initial[i].x * noise_scale.x + noise_offset.x,
         vertices_initial[i].y * noise_scale.y + noise_offset.y,
         vertices_initial[i].z * noise_scale.z + noise_offset.z);
+
     vec3_add(&vertices_initial[i],
              vec3_scaled(vertices_initial[i], noise * amplitude));
   }

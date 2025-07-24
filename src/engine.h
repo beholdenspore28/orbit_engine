@@ -61,6 +61,7 @@ struct mesh {
   GLuint vertices_count;
   GLuint indices_count;
   bool use_indexed_draw;
+  bool use_clockwise_winding;
 };
 
 struct mesh engine_mesh_quad_alloc(void);

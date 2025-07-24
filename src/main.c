@@ -10,10 +10,13 @@ static struct mesh planet_mesh = {0};
 static GLuint planet_texture = 0;
 
 static struct transform planet_transform = (struct transform){
-    .position = (struct vec3){1, 0, 0},
-    .scale = (struct vec3){1, 1, 1},
+    .position = (struct vec3){0, 0, 2000},
+    .scale = (struct vec3){1000, 1000, 1000},
     .rotation = (struct quat){0, 0, 0, 1},
 };
+static GLuint planet_atmosphere_shader = 0;
+static struct mesh planet_atmosphere_mesh = {0};
+static struct transform planet_atmosphere_transform = {0};
 
 static struct mesh quad_mesh = {0};
 
@@ -62,15 +65,28 @@ void engine_scene_load(void) {
 
   planet_texture = engine_texture_alloc("res/textures/moon_1.jpeg");
   camera = camera_alloc();
-  planet_mesh = engine_mesh_planet_alloc(6, vec3_one(1.0), vec3_zero(), 0.5);
+
+  float amplitude = 0.1;
+  planet_mesh = engine_mesh_planet_alloc(6, vec3_one(1.0), vec3_zero(), amplitude);
+
+  planet_atmosphere_shader = engine_shader_create("res/shaders/planet_vertex.glsl",
+                                       "res/shaders/planet_atmosphere_fragment.glsl");
+  planet_atmosphere_mesh = engine_mesh_planet_alloc(6, vec3_one(1.0), vec3_zero(), 0);
+  planet_atmosphere_mesh.use_clockwise_winding = true;
+  planet_atmosphere_transform = planet_transform;
+  planet_atmosphere_transform.scale = vec3_scaled(planet_transform.scale, amplitude * 12);
 
   quad_mesh = engine_mesh_quad_alloc();
 }
 
-void engine_scene_unload(void) { glDeleteProgram(planet_shader); }
-
 void engine_draw(struct mesh mesh, struct transform transform, GLuint shader,
                  GLuint texture) {
+  if (mesh.use_clockwise_winding) {
+    glFrontFace(GL_CW);
+  } else {
+    glFrontFace(GL_CCW);
+  }
+  glUseProgram(shader);
   {
     GLint camera_matrix_location =
         glGetUniformLocation(shader, "u_camera_matrix");
@@ -106,19 +122,11 @@ void engine_draw(struct mesh mesh, struct transform transform, GLuint shader,
 }
 
 void engine_scene_update(void) {
-#if 0
-  vec3 look_angles = (vec3){
-      engine_key_get(ENGINE_KEY_K) - engine_key_get(ENGINE_KEY_J),
-      engine_key_get(ENGINE_KEY_L) - engine_key_get(ENGINE_KEY_H),
-      engine_key_get(ENGINE_KEY_I) - engine_key_get(ENGINE_KEY_O),
-  };
-#else
-  vec3 look_angles = vec3_zero();
-  engine_mouse_delta_get(&look_angles.y, &look_angles.x);
-  // engine_log(MATHF_VEC3_FORMAT_STRING(look_angles));
-#endif
 
-  vec3_scale(&look_angles, engine_time_get()->delta * 2);
+  vec3 look_angles = vec3_zero();
+  look_angles.z = 5.0 * (engine_key_get(ENGINE_KEY_Q) - engine_key_get(ENGINE_KEY_E));
+  engine_mouse_delta_get(&look_angles.y, &look_angles.x);
+  vec3_scale(&look_angles, engine_time_get()->delta * 0.1);
 
   camera.transform.rotation =
       quat_rotate_euler(camera.transform.rotation, look_angles);
@@ -130,7 +138,8 @@ void engine_scene_update(void) {
   };
 
   vec3_normalize(&movedir);
-  vec3_scale(&movedir, 0.1);
+  float speed = engine_key_get(ENGINE_KEY_CTRL) ? 0.4 : 4.0;
+  vec3_scale(&movedir, speed);
 
   // translate to local directions
   movedir = vec3_rotate(movedir, camera.transform.rotation);
@@ -149,10 +158,10 @@ void engine_scene_update(void) {
 void engine_scene_draw(void) {
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-  glUseProgram(planet_shader);
   // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
   engine_draw(planet_mesh, planet_transform, planet_shader, planet_texture);
+  engine_draw(planet_atmosphere_mesh, planet_atmosphere_transform, planet_atmosphere_shader, planet_texture);
   engine_draw(quad_mesh, quad_transform, planet_shader, planet_texture);
 }
 
@@ -171,6 +180,5 @@ int main() {
     }
   }
 
-  engine_scene_unload();
   engine_stop();
 }

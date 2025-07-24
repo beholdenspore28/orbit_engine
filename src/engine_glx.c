@@ -53,7 +53,7 @@ bool engine_start(void) {
                       engine_window_instance.visual_info->visual, AllocNone);
 
   XSetWindowAttributes attributes;
-  attributes.event_mask = ExposureMask | KeyPressMask | KeyReleaseMask |
+  attributes.event_mask = ExposureMask | FocusChangeMask | KeyPressMask | KeyReleaseMask |
                           ButtonPressMask | ButtonReleaseMask |
                           PointerMotionMask;
 
@@ -153,9 +153,12 @@ void engine_update(void) {
   const int window_center_x = engine_window_instance.window_width / 2;
   const int window_center_y = engine_window_instance.window_height / 2;
 
+  static bool has_focus = 0;
+  if (has_focus) {
   XWarpPointer(engine_window_instance.display, None,
                engine_window_instance.window, 0, 0, 0, 0,
                window_center_x, window_center_y);
+  }
 
   XFlush(engine_window_instance
              .display); // Ensure the warp is sent to the server immediately
@@ -165,6 +168,17 @@ void engine_update(void) {
     XNextEvent(engine_window_instance.display, &xev);
 
     switch (xev.type) {
+
+    case FocusIn: {
+      has_focus = true;
+      engine_log("focus in");
+    } break;
+
+    case FocusOut: {
+      has_focus = false;
+      XUngrabPointer(engine_window_instance.display, CurrentTime);
+      engine_log("focus out");
+    } break;
 
     case MotionNotify: {
 

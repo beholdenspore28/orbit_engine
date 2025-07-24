@@ -35,13 +35,5 @@ void main() {
   vec3 normal = normalize(fs_in.normal);
   float diff = max(dot(lightDir, normal), 0.0);
   vec3 diffuse = diff * color;
-  // specular
-  vec3 viewDir = normalize(u_camera_position - fs_in.frag_position);
-  vec3 reflectDir = reflect(-lightDir, normal);
-  float spec = 0.0;
-  vec3 halfwayDir = normalize(lightDir + viewDir);
-  spec = pow(max(dot(normal, halfwayDir), 0.0), 32.0);
-  vec3 specular = vec3(0.3) * spec; // assuming bright white light color
-
-  FragColor = vec4(ambient + diffuse + specular, 1.0);
+  FragColor = vec4(ambient + diffuse, 1.0);
 }
