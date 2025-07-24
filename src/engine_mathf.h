@@ -87,9 +87,9 @@ struct transform {
 #define mathf_pow powf
 #define mathf_floor floorf
 
-#define MATHF_vec4_FORMAT_STRING(v) "{%f %f %f %f}\n", v.x, v.y, v.z, v.w
-#define MATHF_vec3_FORMAT_STRING(v) "{%f %f %f}\n", v.x, v.y, v.z
-#define MATHF_vec2_FORMAT_STRING(v) "{%f %f}\n", v.x, v.y
+#define MATHF_VEC4_FORMAT_STRING(v) "{%f %f %f %f}\n", v.x, v.y, v.z, v.w
+#define MATHF_VEC3_FORMAT_STRING(v) "{%f %f %f}\n", v.x, v.y, v.z
+#define MATHF_VEC2_FORMAT_STRING(v) "{%f %f}\n", v.x, v.y
 
 #define MATHF_QUAT_FORMAT_STRING(q) "{%f %f %f %f}\n", q.x, q.y, q.z, q.w
 

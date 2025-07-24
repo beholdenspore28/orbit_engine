@@ -102,6 +102,9 @@ bool engine_start(void) {
   }
 
   glViewport(0, 0, gwa.width, gwa.height);
+  XGrabPointer(engine_window_instance.display, engine_window_instance.window,
+               True, PointerMotionMask, GrabModeAsync, GrabModeAsync,
+               engine_window_instance.window, None, CurrentTime);
 
   return true;
 }
@@ -121,14 +124,12 @@ void engine_stop(void) {
 }
 
 enum { INPUT_KEYS_MAX = 512 };
-bool input_keys[INPUT_KEYS_MAX] = {false};
+static bool input_keys[INPUT_KEYS_MAX] = {false};
 
-int mouse_x = 0;
-int mouse_y = 0;
-int mouse_x_prev = 0;
-int mouse_y_prev = 0;
-int mouse_x_delta = 0;
-int mouse_y_delta = 0;
+static float mouse_x = 0;
+static float mouse_y = 0;
+static float mouse_x_delta = 0;
+static float mouse_y_delta = 0;
 
 bool engine_key_get(int keysym) {
   const KeyCode keycode =
@@ -136,25 +137,47 @@ bool engine_key_get(int keysym) {
   return input_keys[keycode];
 }
 
+void engine_mouse_position_get(float *x, float *y) {
+  *x = mouse_x;
+  *y = mouse_y;
+}
+
+void engine_mouse_delta_get(float *x, float *y) {
+  *x = mouse_x_delta;
+  *y = mouse_y_delta;
+}
+
 void engine_update(void) {
   glXSwapBuffers(engine_window_instance.display, engine_window_instance.window);
+
+  const int window_center_x = engine_window_instance.window_width / 2;
+  const int window_center_y = engine_window_instance.window_height / 2;
+
+  XWarpPointer(engine_window_instance.display, None,
+               engine_window_instance.window, 0, 0, 0, 0,
+               window_center_x, window_center_y);
+
+  XFlush(engine_window_instance
+             .display); // Ensure the warp is sent to the server immediately
+
   while (XPending(engine_window_instance.display)) {
     XEvent xev;
     XNextEvent(engine_window_instance.display, &xev);
 
     switch (xev.type) {
+
     case MotionNotify: {
-      mouse_x_prev = mouse_x;
-      mouse_y_prev = mouse_y;
+
       mouse_x = xev.xmotion.x;
       mouse_y = xev.xmotion.y;
-      mouse_x_delta = mouse_x - mouse_x_prev;
-      mouse_y_delta = mouse_y - mouse_y_prev;
 
-      engine_log("Mouse moved to X: %d, Y: %d\n", xev.xmotion.x, xev.xmotion.y);
-      engine_log("Mouse delta X: %d, Y: %d\n", mouse_x_delta, mouse_y_delta);
+      mouse_x_delta = mouse_x - window_center_x;
+      mouse_y_delta = mouse_y - window_center_y;
 
+      // engine_log("Mouse moved to X: %d, Y: %d\n", xev.xmotion.x, xev.xmotion.y);
+      // engine_log("Mouse delta X: %f, Y: %f\n", mouse_x_delta, mouse_y_delta);
     } break;
+
     case KeyPress: {
       if (input_keys[xev.xkey.keycode] == 0) {
         input_keys[xev.xkey.keycode] = 1;

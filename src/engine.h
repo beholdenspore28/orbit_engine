@@ -240,6 +240,8 @@ enum {
 };
 
 bool engine_key_get(int keycode);
+void engine_mouse_delta_get(float *x, float *y);
+void engine_mouse_position_get(float *x, float *y);
 
 typedef struct vec2 vec2;
 typedef struct vec3 vec3;

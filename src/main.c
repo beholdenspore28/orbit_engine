@@ -106,11 +106,17 @@ void engine_draw(struct mesh mesh, struct transform transform, GLuint shader,
 }
 
 void engine_scene_update(void) {
+#if 0
   vec3 look_angles = (vec3){
       engine_key_get(ENGINE_KEY_K) - engine_key_get(ENGINE_KEY_J),
       engine_key_get(ENGINE_KEY_L) - engine_key_get(ENGINE_KEY_H),
       engine_key_get(ENGINE_KEY_I) - engine_key_get(ENGINE_KEY_O),
   };
+#else
+  vec3 look_angles = vec3_zero();
+  engine_mouse_delta_get(&look_angles.y, &look_angles.x);
+  // engine_log(MATHF_VEC3_FORMAT_STRING(look_angles));
+#endif
 
   vec3_scale(&look_angles, engine_time_get()->delta * 2);
 
