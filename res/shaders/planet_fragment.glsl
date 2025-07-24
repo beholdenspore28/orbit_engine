@@ -4,7 +4,6 @@ in VS_OUT {
   vec3 position;
   vec3 normal;
   vec3 normal_local;
-  vec3 frag_position;
 } fs_in;
 
 out vec4 FragColor;
@@ -31,7 +30,7 @@ void main() {
 
   vec3 ambient = 0.1 * color;
   // diffuse
-  vec3 lightDir = normalize(u_light_position - fs_in.frag_position);
+  vec3 lightDir = normalize(u_light_position - fs_in.position);
   vec3 normal = normalize(fs_in.normal);
   float diff = max(dot(lightDir, normal), 0.0);
   vec3 diffuse = diff * color;

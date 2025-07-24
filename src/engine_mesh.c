@@ -192,6 +192,7 @@ struct mesh engine_mesh_planet_alloc(const unsigned int subdivisions,
     normals_initial[indices_initial[i]] = face_normal;
     normals_initial[indices_initial[i + 1]] = face_normal;
     normals_initial[indices_initial[i + 2]] = face_normal;
+    // engine_log(MATHF_VEC3_FORMAT_STRING(face_normal));
   }
 #endif
 
@@ -236,6 +237,9 @@ struct mesh engine_mesh_planet_alloc(const unsigned int subdivisions,
 
   struct mesh mesh = {0};
   mesh.VAO = VAO;
+  mesh.vertices_VBO = vertices_VBO;
+  mesh.normals_VBO = normals_VBO;
+  mesh.texcoords_VBO = texcoords_VBO;
   mesh.EBO = EBO;
   mesh.vertices_count = list_vec3_count(vertices_initial);
   mesh.indices_count = list_GLuint_count(indices_initial);

@@ -58,7 +58,9 @@ void engine_time_update(void) {
 void engine_scene_load(void) {
   glEnable(GL_DEPTH_TEST);
   glEnable(GL_CULL_FACE);
-  glClearColor(0, 0, 0, 1);
+  glEnable(GL_BLEND);
+  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+  glClearColor(0,0,0,1);
 
   planet_shader = engine_shader_create("res/shaders/planet_vertex.glsl",
                                        "res/shaders/planet_fragment.glsl");
@@ -69,10 +71,10 @@ void engine_scene_load(void) {
   float amplitude = 0.1;
   planet_mesh = engine_mesh_planet_alloc(6, vec3_one(1.0), vec3_zero(), amplitude);
 
-  planet_atmosphere_shader = engine_shader_create("res/shaders/planet_vertex.glsl",
+  planet_atmosphere_shader = engine_shader_create("res/shaders/planet_atmosphere_vertex.glsl",
                                        "res/shaders/planet_atmosphere_fragment.glsl");
   planet_atmosphere_mesh = engine_mesh_planet_alloc(6, vec3_one(1.0), vec3_zero(), 0);
-  planet_atmosphere_mesh.use_clockwise_winding = true;
+  //planet_atmosphere_mesh.use_clockwise_winding = true;
   planet_atmosphere_transform = planet_transform;
   planet_atmosphere_transform.scale = vec3_scaled(planet_transform.scale, amplitude * 12);
 
@@ -161,7 +163,7 @@ void engine_scene_draw(void) {
   // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
   engine_draw(planet_mesh, planet_transform, planet_shader, planet_texture);
-  engine_draw(planet_atmosphere_mesh, planet_atmosphere_transform, planet_atmosphere_shader, planet_texture);
+  engine_draw(planet_atmosphere_mesh, planet_atmosphere_transform, planet_atmosphere_shader, 0);
   engine_draw(quad_mesh, quad_transform, planet_shader, planet_texture);
 }
 
