@@ -123,6 +123,13 @@ void engine_stop(void) {
 enum { INPUT_KEYS_MAX = 512 };
 bool input_keys[INPUT_KEYS_MAX] = {false};
 
+int mouse_x = 0;
+int mouse_y = 0;
+int mouse_x_prev = 0;
+int mouse_y_prev = 0;
+int mouse_x_delta = 0;
+int mouse_y_delta = 0;
+
 bool engine_key_get(int keysym) {
   const KeyCode keycode =
       XKeysymToKeycode(engine_window_instance.display, keysym);
@@ -137,7 +144,16 @@ void engine_update(void) {
 
     switch (xev.type) {
     case MotionNotify: {
+      mouse_x_prev = mouse_x;
+      mouse_y_prev = mouse_y;
+      mouse_x = xev.xmotion.x;
+      mouse_y = xev.xmotion.y;
+      mouse_x_delta = mouse_x - mouse_x_prev;
+      mouse_y_delta = mouse_y - mouse_y_prev;
+
       engine_log("Mouse moved to X: %d, Y: %d\n", xev.xmotion.x, xev.xmotion.y);
+      engine_log("Mouse delta X: %d, Y: %d\n", mouse_x_delta, mouse_y_delta);
+
     } break;
     case KeyPress: {
       if (input_keys[xev.xkey.keycode] == 0) {
