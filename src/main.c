@@ -67,9 +67,7 @@ void engine_scene_load(void) {
   quad_mesh = engine_mesh_quad_alloc();
 }
 
-void engine_scene_unload(void) {
-  glDeleteProgram(planet_shader);
-}
+void engine_scene_unload(void) { glDeleteProgram(planet_shader); }
 
 void engine_draw(struct mesh mesh, struct transform transform, GLuint shader,
                  GLuint texture) {
@@ -108,13 +106,16 @@ void engine_draw(struct mesh mesh, struct transform transform, GLuint shader,
 }
 
 void engine_scene_update(void) {
-#if 1
-  float lookY =
-      engine_key_get(ENGINE_KEY_PERIOD) - engine_key_get(ENGINE_KEY_COMMA);
-  lookY *= 0.05;
+  vec3 look_angles = (vec3){
+      engine_key_get(ENGINE_KEY_K) - engine_key_get(ENGINE_KEY_J),
+      engine_key_get(ENGINE_KEY_L) - engine_key_get(ENGINE_KEY_H),
+      engine_key_get(ENGINE_KEY_I) - engine_key_get(ENGINE_KEY_O),
+  };
+
+  vec3_scale(&look_angles, engine_time_get()->delta * 2);
 
   camera.transform.rotation =
-      quat_rotate_euler(camera.transform.rotation, vec3_up(lookY));
+      quat_rotate_euler(camera.transform.rotation, look_angles);
 
   struct vec3 movedir = (struct vec3){
       engine_key_get(ENGINE_KEY_D) - engine_key_get(ENGINE_KEY_A),
@@ -130,7 +131,6 @@ void engine_scene_update(void) {
 
   // engine_log(MATHF_vec3_FORMAT_STRING(movedir));
   vec3_add(&camera.transform.position, movedir);
-#endif
 
   camera_update(&camera);
   planet_transform.rotation = quat_rotate_euler(

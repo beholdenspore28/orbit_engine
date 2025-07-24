@@ -53,7 +53,10 @@ bool engine_start(void) {
                       engine_window_instance.visual_info->visual, AllocNone);
 
   XSetWindowAttributes attributes;
-  attributes.event_mask = ExposureMask | KeyPressMask | KeyReleaseMask;
+  attributes.event_mask = ExposureMask | KeyPressMask | KeyReleaseMask |
+                          ButtonPressMask | ButtonReleaseMask |
+                          PointerMotionMask;
+
   attributes.colormap = engine_window_instance.colormap;
 
   engine_window_instance.window = XCreateWindow(
@@ -133,6 +136,9 @@ void engine_update(void) {
     XNextEvent(engine_window_instance.display, &xev);
 
     switch (xev.type) {
+    case MotionNotify: {
+      engine_log("Mouse moved to X: %d, Y: %d\n", xev.xmotion.x, xev.xmotion.y);
+    } break;
     case KeyPress: {
       if (input_keys[xev.xkey.keycode] == 0) {
         input_keys[xev.xkey.keycode] = 1;
