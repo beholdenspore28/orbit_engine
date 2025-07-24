@@ -54,7 +54,9 @@ void engine_file_free(const struct engine_file file);
 
 struct mesh {
   GLuint VAO;
-  GLuint *VBOs;
+  GLuint vertices_VBO;
+  GLuint normals_VBO;
+  GLuint texcoords_VBO;
   GLuint EBO;
   GLuint vertices_count;
   GLuint indices_count;

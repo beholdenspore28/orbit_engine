@@ -12,15 +12,20 @@ const vec3 engine_mesh_quad_normals[6] = {
 };
 
 struct mesh engine_mesh_quad_alloc(void) {
-  GLuint VAO;
+  GLuint VAO = 0;
+  GLuint vertices_VBO = 0;
+  GLuint normals_VBO = 0;
+  GLuint texcoords_VBO = 0;
+
   glGenVertexArrays(1, &VAO);
   glBindVertexArray(VAO);
 
-  GLuint *VBOs = calloc(2, sizeof(*VBOs));
-  glGenBuffers(4, VBOs);
+  glGenBuffers(1, &vertices_VBO);
+  glGenBuffers(1, &normals_VBO);
+  glGenBuffers(1, &texcoords_VBO);
 
   // positions
-  glBindBuffer(GL_ARRAY_BUFFER, VBOs[0]);
+  glBindBuffer(GL_ARRAY_BUFFER, vertices_VBO);
   glBufferData(GL_ARRAY_BUFFER, 6 * sizeof(*engine_mesh_quad_vertices),
                engine_mesh_quad_vertices, GL_STATIC_DRAW);
 
@@ -28,7 +33,7 @@ struct mesh engine_mesh_quad_alloc(void) {
   glEnableVertexAttribArray(0);
 
   // normals
-  glBindBuffer(GL_ARRAY_BUFFER, VBOs[1]);
+  glBindBuffer(GL_ARRAY_BUFFER, normals_VBO);
   glBufferData(GL_ARRAY_BUFFER, 6 * sizeof(*engine_mesh_quad_normals),
                engine_mesh_quad_normals, GL_STATIC_DRAW);
 
@@ -40,7 +45,9 @@ struct mesh engine_mesh_quad_alloc(void) {
   struct mesh mesh = (struct mesh){0};
 
   mesh.VAO = VAO;
-  mesh.VBOs = VBOs;
+  mesh.vertices_VBO = vertices_VBO;
+  mesh.normals_VBO = normals_VBO;
+  mesh.texcoords_VBO = texcoords_VBO;
   mesh.vertices_count = 6;
   mesh.use_indexed_draw = false;
 
@@ -186,15 +193,20 @@ struct mesh engine_mesh_planet_alloc(const unsigned int subdivisions,
   }
 #endif
 
-  GLuint VAO;
+  GLuint VAO = 0;
+  GLuint vertices_VBO = 0;
+  GLuint normals_VBO = 0;
+  GLuint texcoords_VBO = 0;
+
   glGenVertexArrays(1, &VAO);
   glBindVertexArray(VAO);
 
-  GLuint *VBOs = calloc(5, sizeof(*VBOs));
-  glGenBuffers(4, VBOs);
+  glGenBuffers(1, &vertices_VBO);
+  glGenBuffers(1, &normals_VBO);
+  glGenBuffers(1, &texcoords_VBO);
 
   // positions
-  glBindBuffer(GL_ARRAY_BUFFER, VBOs[0]);
+  glBindBuffer(GL_ARRAY_BUFFER, vertices_VBO);
   glBufferData(GL_ARRAY_BUFFER,
                list_vec3_count(vertices_initial) * sizeof(*vertices_initial),
                vertices_initial, GL_STATIC_DRAW);
@@ -210,7 +222,7 @@ struct mesh engine_mesh_planet_alloc(const unsigned int subdivisions,
                indices_initial, GL_STATIC_DRAW);
 
   // normals
-  glBindBuffer(GL_ARRAY_BUFFER, VBOs[1]);
+  glBindBuffer(GL_ARRAY_BUFFER, normals_VBO);
   glBufferData(GL_ARRAY_BUFFER,
                list_vec3_count(normals_initial) * sizeof(*normals_initial),
                normals_initial, GL_STATIC_DRAW);
@@ -222,7 +234,6 @@ struct mesh engine_mesh_planet_alloc(const unsigned int subdivisions,
 
   struct mesh mesh = {0};
   mesh.VAO = VAO;
-  mesh.VBOs = VBOs;
   mesh.EBO = EBO;
   mesh.vertices_count = list_vec3_count(vertices_initial);
   mesh.indices_count = list_GLuint_count(indices_initial);
@@ -233,4 +244,36 @@ struct mesh engine_mesh_planet_alloc(const unsigned int subdivisions,
   list_vec3_free(normals_initial);
 
   return mesh;
+}
+
+void engine_mesh_free(struct mesh *mesh) {
+  if (mesh->VAO) {
+    glDeleteVertexArrays(1, &mesh->VAO);
+  } else {
+    engine_log("no VAO present.");
+  }
+
+  if (mesh->vertices_VBO) {
+    glDeleteBuffers(1, &mesh->vertices_VBO);
+  } else {
+    engine_log("no vertices present");
+  }
+
+  if (mesh->normals_VBO) {
+    glDeleteBuffers(1, &mesh->normals_VBO);
+  } else {
+    engine_log("no normals present");
+  }
+
+  if (mesh->texcoords_VBO) {
+    glDeleteBuffers(1, &mesh->texcoords_VBO);
+  } else {
+    engine_log("no texcoords present");
+  }
+
+  if (mesh->EBO) {
+    glDeleteBuffers(1, &mesh->EBO);
+  } else {
+    engine_log("no EBO present");
+  }
 }

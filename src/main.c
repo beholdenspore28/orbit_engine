@@ -62,19 +62,12 @@ void engine_scene_load(void) {
 
   planet_texture = engine_texture_alloc("res/textures/moon_1.jpeg");
   camera = camera_alloc();
-  planet_mesh = engine_mesh_planet_alloc(8, vec3_one(1.0), vec3_zero(), 3);
+  planet_mesh = engine_mesh_planet_alloc(6, vec3_one(1.0), vec3_zero(), 0.5);
 
   quad_mesh = engine_mesh_quad_alloc();
 }
 
 void engine_scene_unload(void) {
-  glDeleteBuffers(1, &quad_mesh.VBOs[0]);
-  glDeleteVertexArrays(1, &quad_mesh.VAO);
-
-  glDeleteBuffers(1, &planet_mesh.VBOs[0]);
-  glDeleteBuffers(1, &planet_mesh.EBO);
-  glDeleteVertexArrays(1, &planet_mesh.VAO);
-
   glDeleteProgram(planet_shader);
 }
 
@@ -140,9 +133,8 @@ void engine_scene_update(void) {
 #endif
 
   camera_update(&camera);
-
-  planet_transform.rotation =
-      quat_rotate_euler(planet_transform.rotation, vec3_one(engine_time_get()->delta * 0.1));
+  planet_transform.rotation = quat_rotate_euler(
+      planet_transform.rotation, vec3_one(engine_time_get()->delta * 0.000729));
 
   quad_transform.rotation =
       quat_rotate_euler(quad_transform.rotation, vec3_up(0.005));
@@ -167,6 +159,10 @@ int main() {
     engine_scene_update();
     engine_scene_draw();
     engine_update();
+
+    if (engine_key_get(ENGINE_KEY_ESCAPE)) {
+      break;
+    }
   }
 
   engine_scene_unload();
