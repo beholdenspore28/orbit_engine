@@ -1,8 +1,37 @@
 #include "engine.h"
 
+const vec3 engine_mesh_cube_vertices[36] = {
+    (vec3){0.5, -0.5, -0.5}, (vec3){0.5, 0.5, -0.5}, (vec3){-0.5, 0.5, -0.5},
+    (vec3){-0.5, 0.5, -0.5}, (vec3){-0.5, -0.5, -0.5}, (vec3){0.5, -0.5, -0.5},
+    (vec3){0.5, -0.5, 0.5}, (vec3){-0.5, 0.5, 0.5}, (vec3){0.5, 0.5, 0.5}, 
+    (vec3){-0.5, 0.5, 0.5}, (vec3){0.5, -0.5, 0.5}, (vec3){-0.5, -0.5, 0.5},
+    (vec3){0.5, 0.5, -0.5}, (vec3){0.5, 0.5, 0.5}, (vec3){-0.5, 0.5, 0.5},
+    (vec3){0.5, 0.5, -0.5}, (vec3){-0.5, 0.5, 0.5}, (vec3){-0.5, 0.5, -0.5}, 
+    (vec3){0.5, -0.5, -0.5}, (vec3){-0.5, -0.5, 0.5}, (vec3){0.5, -0.5, 0.5}, 
+    (vec3){0.5, -0.5, -0.5}, (vec3){-0.5, -0.5, -0.5}, (vec3){-0.5, -0.5, 0.5},
+    (vec3){-0.5, 0.5, -0.5}, (vec3){-0.5, 0.5, 0.5}, (vec3){-0.5, -0.5, 0.5},
+    (vec3){-0.5, 0.5, -0.5}, (vec3){-0.5, -0.5, 0.5}, (vec3){-0.5, -0.5, -0.5}, 
+    (vec3){0.5, 0.5, -0.5}, (vec3){0.5, -0.5, 0.5}, (vec3){0.5, 0.5, 0.5}, 
+    (vec3){0.5, 0.5, -0.5}, (vec3){0.5, -0.5, -0.5}, (vec3){0.5, -0.5, 0.5}, 
+};
+
+const vec3 engine_mesh_cube_normals[36] = {
+    (vec3){0.5, -0.5, -0.5}, (vec3){0.5, 0.5, -0.5}, (vec3){-0.5, 0.5, -0.5},
+    (vec3){-0.5, 0.5, -0.5}, (vec3){-0.5, -0.5, -0.5}, (vec3){0.5, -0.5, -0.5},
+    (vec3){0.5, -0.5, 0.5}, (vec3){-0.5, 0.5, 0.5}, (vec3){0.5, 0.5, 0.5}, 
+    (vec3){-0.5, 0.5, 0.5}, (vec3){0.5, -0.5, 0.5}, (vec3){-0.5, -0.5, 0.5},
+    (vec3){0.5, 0.5, -0.5}, (vec3){0.5, 0.5, 0.5}, (vec3){-0.5, 0.5, 0.5},
+    (vec3){0.5, 0.5, -0.5}, (vec3){-0.5, 0.5, 0.5}, (vec3){-0.5, 0.5, -0.5}, 
+    (vec3){0.5, -0.5, -0.5}, (vec3){-0.5, -0.5, 0.5}, (vec3){0.5, -0.5, 0.5}, 
+    (vec3){0.5, -0.5, -0.5}, (vec3){-0.5, -0.5, -0.5}, (vec3){-0.5, -0.5, 0.5},
+    (vec3){-0.5, 0.5, -0.5}, (vec3){-0.5, 0.5, 0.5}, (vec3){-0.5, -0.5, 0.5},
+    (vec3){-0.5, 0.5, -0.5}, (vec3){-0.5, -0.5, 0.5}, (vec3){-0.5, -0.5, -0.5}, 
+    (vec3){0.5, 0.5, -0.5}, (vec3){0.5, -0.5, 0.5}, (vec3){0.5, 0.5, 0.5}, 
+    (vec3){0.5, 0.5, -0.5}, (vec3){0.5, -0.5, -0.5}, (vec3){0.5, -0.5, 0.5}, 
+};
+
 const vec3 engine_mesh_quad_vertices[6] = {
     (vec3){0.5, -0.5, 0.0}, (vec3){0.5, 0.5, 0.0},   (vec3){-0.5, 0.5, 0.0},
-
     (vec3){-0.5, 0.5, 0.0}, (vec3){-0.5, -0.5, 0.0}, (vec3){0.5, -0.5, 0.0},
 };
 
@@ -10,6 +39,49 @@ const vec3 engine_mesh_quad_normals[6] = {
     vec3_back(1.0), vec3_back(1.0), vec3_back(1.0),
     vec3_back(1.0), vec3_back(1.0), vec3_back(1.0),
 };
+
+struct mesh engine_mesh_cube_alloc(void) {
+  GLuint VAO = 0;
+  GLuint vertices_VBO = 0;
+  GLuint normals_VBO = 0;
+  GLuint texcoords_VBO = 0;
+
+  glGenVertexArrays(1, &VAO);
+  glBindVertexArray(VAO);
+
+  glGenBuffers(1, &vertices_VBO);
+  glGenBuffers(1, &normals_VBO);
+  glGenBuffers(1, &texcoords_VBO);
+
+  // positions
+  glBindBuffer(GL_ARRAY_BUFFER, vertices_VBO);
+  glBufferData(GL_ARRAY_BUFFER, 36 * sizeof(*engine_mesh_cube_vertices),
+               engine_mesh_cube_vertices, GL_STATIC_DRAW);
+
+  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void *)0);
+  glEnableVertexAttribArray(0);
+
+  // normals
+  glBindBuffer(GL_ARRAY_BUFFER, normals_VBO);
+  glBufferData(GL_ARRAY_BUFFER, 36 * sizeof(*engine_mesh_cube_normals),
+               engine_mesh_cube_normals, GL_STATIC_DRAW);
+
+  glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, (void *)0);
+  glEnableVertexAttribArray(1);
+
+  glBindVertexArray(0);
+
+  struct mesh mesh = (struct mesh){0};
+
+  mesh.VAO = VAO;
+  mesh.vertices_VBO = vertices_VBO;
+  mesh.normals_VBO = normals_VBO;
+  mesh.texcoords_VBO = texcoords_VBO;
+  mesh.vertices_count = 36;
+  mesh.use_indexed_draw = false;
+
+  return mesh;
+}
 
 struct mesh engine_mesh_quad_alloc(void) {
   GLuint VAO = 0;

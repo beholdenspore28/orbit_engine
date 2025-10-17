@@ -65,6 +65,7 @@ struct mesh {
 };
 
 struct mesh engine_mesh_quad_alloc(void);
+struct mesh engine_mesh_cube_alloc(void);
 
 struct mesh engine_mesh_planet_alloc(const unsigned int subdivisions,
                                      const struct vec3 noise_scale,

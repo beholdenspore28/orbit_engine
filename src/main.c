@@ -18,7 +18,7 @@ static GLuint planet_atmosphere_shader = 0;
 static struct mesh planet_atmosphere_mesh = {0};
 static struct transform planet_atmosphere_transform = {0};
 
-static struct mesh quad_mesh = {0};
+static struct mesh cube_mesh = {0};
 
 static struct transform quad_transform = {
     .position = (struct vec3){-1, 0, 0},
@@ -60,7 +60,7 @@ void engine_scene_load(void) {
   glEnable(GL_CULL_FACE);
   glEnable(GL_BLEND);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-  glClearColor(0,0,0,1);
+  glClearColor(0.3, 0.4, 0.5, 1.0);
 
   planet_shader = engine_shader_create("res/shaders/planet_vertex.glsl",
                                        "res/shaders/planet_fragment.glsl");
@@ -78,7 +78,7 @@ void engine_scene_load(void) {
   planet_atmosphere_transform = planet_transform;
   planet_atmosphere_transform.scale = vec3_scaled(planet_transform.scale, amplitude * 12);
 
-  quad_mesh = engine_mesh_quad_alloc();
+  cube_mesh = engine_mesh_cube_alloc();
 }
 
 void engine_draw(struct mesh mesh, struct transform transform, GLuint shader,
@@ -119,7 +119,7 @@ void engine_draw(struct mesh mesh, struct transform transform, GLuint shader,
   if (mesh.use_indexed_draw) {
     glDrawElements(GL_TRIANGLES, mesh.indices_count, GL_UNSIGNED_INT, 0);
   } else {
-    glDrawArrays(GL_TRIANGLES, 0, 6);
+    glDrawArrays(GL_TRIANGLES, 0, mesh.vertices_count);
   }
 }
 
@@ -140,7 +140,7 @@ void engine_scene_update(void) {
   };
 
   vec3_normalize(&movedir);
-  float speed = engine_key_get(ENGINE_KEY_CTRL) ? 0.4 : 4.0;
+  float speed = engine_key_get(ENGINE_KEY_CTRL) ? 4.0 : 0.4;
   vec3_scale(&movedir, speed);
 
   // translate to local directions
@@ -162,9 +162,9 @@ void engine_scene_draw(void) {
 
   // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
-  engine_draw(planet_mesh, planet_transform, planet_shader, planet_texture);
-  engine_draw(planet_atmosphere_mesh, planet_atmosphere_transform, planet_atmosphere_shader, 0);
-  engine_draw(quad_mesh, quad_transform, planet_shader, planet_texture);
+  // engine_draw(planet_mesh, planet_transform, planet_shader, planet_texture);
+  // engine_draw(planet_atmosphere_mesh, planet_atmosphere_transform, planet_atmosphere_shader, 0);
+  engine_draw(cube_mesh, quad_transform, planet_shader, planet_texture);
 }
 
 int main() {
